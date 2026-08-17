@@ -79,6 +79,7 @@ export interface AppSettings {
   shuffleQuestions: boolean;
   untilCorrectMode: boolean;
   buttonIconStyle: 'xbox' | 'playstation';
+  shuffleAnswers: boolean;
 }
 
 export interface GamepadMapping {
