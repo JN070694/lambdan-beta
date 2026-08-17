@@ -56,6 +56,7 @@ export default function SettingsView() {
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [livePressed, setLivePressed] = useState<number | null>(null);
   const [showQuitAppConfirm, setShowQuitAppConfirm] = useState(false);
+  const [testModeActive, setTestModeActive] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export default function SettingsView() {
   }, []);
 
   useEffect(() => { setLocalMapping(gamepadMapping); }, [gamepadMapping]);
-  useEffect(() => { setFocusedIndex(0); }, [tab]);
+  useEffect(() => { setFocusedIndex(0); setTestModeActive(false); }, [tab]);
 
   // Live highlight: show which action row corresponds to whatever button
   // is currently pressed, while browsing the Gamepad tab (not during remap).
@@ -176,14 +177,16 @@ export default function SettingsView() {
     onFocusChange: setFocusedIndex,
     onConfirm,
     onBack,
-    enabled: !remapAllActive && !showQuitAppConfirm,
+    enabled: !remapAllActive && !showQuitAppConfirm && !testModeActive,
   });
 
   const TABS: SettingsSubTab[] = ['quiz', 'gamepad', 'theme', 'about', 'version'];
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24,
+        opacity: testModeActive ? 0.35 : 1, pointerEvents: testModeActive ? 'none' : 'auto',
+        transition: 'opacity 0.15s ease' }}>
         <TriggerIcon side="left" label="LB" />
         <div className="settings-tabs" style={{ flex: 1, marginBottom: 0 }}>
           {TABS.map(t => (
@@ -293,7 +296,9 @@ export default function SettingsView() {
       {tab === 'gamepad' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10,
+              opacity: testModeActive ? 0.35 : 1, pointerEvents: testModeActive ? 'none' : 'auto',
+              transition: 'opacity 0.15s ease' }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
                 background: navigator.getGamepads().some(g => g) ? '#000' : '#ccc',
                 border: '1.5px solid #999' }} />
@@ -306,9 +311,26 @@ export default function SettingsView() {
                 </div>
               </div>
             </div>
-            <button className="btn btn-primary btn-sm" onClick={startRemapAll} disabled={remapAllActive}>
-              Remap Controller
-            </button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button className={`btn btn-sm ${testModeActive ? '' : 'btn-primary'}`}
+                onClick={() => setTestModeActive(v => !v)}
+                disabled={remapAllActive}
+                style={testModeActive ? { background: '#000', color: '#fff', border: '1px solid #000' } : undefined}>
+                {testModeActive ? 'Stop Test' : 'Test Controller'}
+              </button>
+              <div style={{ display: 'flex', gap: 8,
+                opacity: testModeActive ? 0.35 : 1, pointerEvents: testModeActive ? 'none' : 'auto',
+                transition: 'opacity 0.15s ease' }}>
+                <button className="btn btn-secondary btn-sm" onClick={startRemapAll} disabled={remapAllActive}>
+                  Remap Controller
+                </button>
+                <button className="btn btn-secondary btn-sm"
+                  onClick={() => { setLocalMapping(DEFAULT_MAPPING); saveMapping(DEFAULT_MAPPING); }}
+                  disabled={remapAllActive}>
+                  Reset Defaults
+                </button>
+              </div>
+            </div>
           </div>
 
           {remapAllActive && (
@@ -357,13 +379,6 @@ export default function SettingsView() {
                 );
               })}
             </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-            <button className="btn btn-secondary"
-              onClick={() => { setLocalMapping(DEFAULT_MAPPING); saveMapping(DEFAULT_MAPPING); }}>
-              Reset Defaults
-            </button>
           </div>
         </div>
       )}
