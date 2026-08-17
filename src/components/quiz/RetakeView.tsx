@@ -30,7 +30,7 @@ export default function RetakeView() {
         const quiz = allQuizzes.find(q => q.id === quizId);
         if (!quiz) { navigate('/library'); return; }
         const missed = allQs.filter(q => state.missedIds.includes(q.id));
-        startSession(quiz, prepareQuestions(missed));
+        startSession(quiz, prepareQuestions(missed, settings.shuffleAnswers));
       } finally { setLoading(false); }
     })();
     return () => clearSession();
