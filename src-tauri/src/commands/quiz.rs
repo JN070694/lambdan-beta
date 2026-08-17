@@ -197,9 +197,14 @@ pub async fn get_settings() -> std::result::Result<AppSettings, LambdanError> {
         "SELECT value FROM settings WHERE key='button_icon_style'",
         [], |r| r.get::<_, String>(0),
     ).unwrap_or_else(|_| "xbox".to_string());
+    let shuffle_answers: bool = conn.query_row(
+        "SELECT value FROM settings WHERE key='shuffle_answers'",
+        [], |r| r.get::<_, String>(0),
+    ).map(|v| v == "true").unwrap_or(true);
     Ok(AppSettings {
         instant_feedback: instant, shuffle_questions: shuffle,
         until_correct_mode: until_correct, button_icon_style: icon_style,
+        shuffle_answers,
     })
 }
 
@@ -221,6 +226,10 @@ pub async fn save_settings(settings: AppSettings) -> std::result::Result<(), Lam
     conn.execute(
         "INSERT OR REPLACE INTO settings (key, value) VALUES ('button_icon_style', ?1)",
         params![settings.button_icon_style],
+    )?;
+    conn.execute(
+        "INSERT OR REPLACE INTO settings (key, value) VALUES ('shuffle_answers', ?1)",
+        params![if settings.shuffle_answers { "true" } else { "false" }],
     )?;
     Ok(())
 }
