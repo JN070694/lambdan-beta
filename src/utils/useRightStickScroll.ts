@@ -17,20 +17,33 @@ export function useRightStickScroll() {
   useEffect(() => {
     const SPEED = 14;
     const DEADZONE = 0.35; // widened to tolerate stick drift
+    // The full-DOM scan below is expensive (walks every element in the
+    // document), so it's cached and only re-run at most this often —
+    // never on every animation frame. Without this, a stuck/off-center
+    // stick reading (e.g. from a controller that disconnects mid-frame
+    // and leaves a stale, frozen axis value behind) would re-run the
+    // full scan 60 times a second forever, pegging the main thread and
+    // making the whole app — mouse included — appear to freeze.
+    const RESCAN_INTERVAL_MS = 400;
+
+    let cachedVTarget: HTMLElement | null = null;
+    let cachedHTarget: HTMLElement | null = null;
+    let lastVScanAt = 0;
+    let lastHScanAt = 0;
 
     const isVScrollable = (el: Element): el is HTMLElement => {
-      if (!(el instanceof HTMLElement)) return false;
+      if (!(el instanceof HTMLElement) || !el.isConnected) return false;
       const style = getComputedStyle(el);
       return (style.overflowY === 'auto' || style.overflowY === 'scroll') && el.scrollHeight > el.clientHeight + 2;
     };
 
     const isHScrollable = (el: Element): el is HTMLElement => {
-      if (!(el instanceof HTMLElement)) return false;
+      if (!(el instanceof HTMLElement) || !el.isConnected) return false;
       const style = getComputedStyle(el);
       return (style.overflowX === 'auto' || style.overflowX === 'scroll') && el.scrollWidth > el.clientWidth + 2;
     };
 
-    const findTarget = (predicate: (el: Element) => el is HTMLElement): HTMLElement | null => {
+    const scanForTarget = (predicate: (el: Element) => el is HTMLElement): HTMLElement | null => {
       try {
         const marked = document.querySelector('[data-stick-scroll]') as HTMLElement | null;
         if (marked && predicate(marked)) return marked;
@@ -52,11 +65,20 @@ export function useRightStickScroll() {
 
     return gamepadPoller.subscribe(state => {
       if (!state.connected) return;
+      const now = Date.now();
 
       const rawY = state.axes[3] ?? 0;
       if (Math.abs(rawY) > DEADZONE) {
         const delta = scale(rawY);
-        const target = findTarget(isVScrollable) ?? (document.querySelector('.main-content') as HTMLElement | null);
+        if (!cachedVTarget || !isVScrollable(cachedVTarget)) {
+          if (now - lastVScanAt > RESCAN_INTERVAL_MS) {
+            cachedVTarget = scanForTarget(isVScrollable);
+            lastVScanAt = now;
+          } else {
+            cachedVTarget = null;
+          }
+        }
+        const target = cachedVTarget ?? (document.querySelector('.main-content') as HTMLElement | null);
         if (target) target.scrollTop += delta;
         else window.scrollBy(0, delta);
       }
@@ -64,8 +86,15 @@ export function useRightStickScroll() {
       const rawX = state.axes[2] ?? 0;
       if (Math.abs(rawX) > DEADZONE) {
         const delta = scale(rawX);
-        const target = findTarget(isHScrollable);
-        if (target) target.scrollLeft += delta;
+        if (!cachedHTarget || !isHScrollable(cachedHTarget)) {
+          if (now - lastHScanAt > RESCAN_INTERVAL_MS) {
+            cachedHTarget = scanForTarget(isHScrollable);
+            lastHScanAt = now;
+          } else {
+            cachedHTarget = null;
+          }
+        }
+        if (cachedHTarget) cachedHTarget.scrollLeft += delta;
       }
     });
   }, []);
