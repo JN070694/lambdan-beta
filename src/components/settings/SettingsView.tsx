@@ -468,18 +468,25 @@ export default function SettingsView() {
 
             <p style={{ fontWeight: 700, marginBottom: 4 }}>CSV question formats</p>
             <p style={{ marginBottom: 6 }}>
-              Each row has 10 comma-separated columns:
+              Each row has 11 comma-separated columns:
             </p>
             <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
-{`[1] Q#  [2] Question text  [3] A  [4] B  [5] C  [6] D  [7] E  [8] Answer  [9] Group  [10] nid`}
+{`[1] Q#  [2] Question text  [3] A  [4] B  [5] C  [6] D  [7] E  [8] Answer  [9] Explanation  [10] Group  [11] nid`}
             </pre>
+
+            <div style={{ background: '#fff8e1', border: '1px solid #e8d38a', borderRadius: 6,
+              padding: '8px 10px', marginBottom: 14, fontSize: 12, lineHeight: 1.6 }}>
+              <strong>Note:</strong> for True / False questions, column 8 (Answer) should be{' '}
+              <code>A</code> for True and <code>B</code> for False — the same A/B columns used by
+              Multiple Choice — so it always points to the correct option.
+            </div>
 
             <p style={{ fontWeight: 600, marginBottom: 4, marginTop: 8 }}>Multiple Choice</p>
             <p style={{ marginBottom: 6 }}>Fill in options A–E (at least A and B). Set column 8 to the correct letter.</p>
             <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
-{`1,What is 2+2?,One,Two,Three,Four,,C,Math,`}
+{`1,What is 2+2?,One,Two,Three,Four,,C,2 + 2 counts four total units.,Math,`}
             </pre>
 
             <p style={{ fontWeight: 600, marginBottom: 4 }}>True / False</p>
@@ -489,7 +496,7 @@ export default function SettingsView() {
             </p>
             <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
-{`2,The sky is blue.,True,False,,,,A,Science,`}
+{`2,The sky is blue.,True,False,,,,A,Rayleigh scattering makes short blue wavelengths visible.,Science,`}
             </pre>
 
             <p style={{ fontWeight: 600, marginBottom: 4 }}>Essay / Short Answer</p>
@@ -498,9 +505,16 @@ export default function SettingsView() {
               The app will show a "Show Answer" prompt — you then mark yourself correct or incorrect.
             </p>
             <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
-              fontFamily: 'var(--font-mono)', fontSize: 11, overflowX: 'auto' }}>
-{`3,Explain supply and demand.,,,,,,The law of supply and demand describes how price and quantity interact in a market.,Economics,`}
+              fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
+{`3,Explain supply and demand.,,,,,,The law of supply and demand describes how price and quantity interact in a market.,,Economics,`}
             </pre>
+
+            <p style={{ fontWeight: 700, marginBottom: 4, marginTop: 8 }}>Explanation column</p>
+            <p style={{ marginBottom: 0 }}>
+              Column 9 is optional but common — a short paragraph or formula showing how to arrive
+              at the answer. When filled in, it appears beneath the correct/incorrect feedback
+              after you answer a question during a quiz.
+            </p>
           </div>
         </div>
       )}
