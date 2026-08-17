@@ -24,6 +24,16 @@ class GamepadPoller {
   private rafId: number | null = null;
   private lastButtons: boolean[] = [];
   private lockedIndex: number | null = null;
+  // Ghost-gamepad detection: some browser/OS/dongle combinations leave a
+  // stale Gamepad entry behind after a physical disconnect — still
+  // reporting connected:true, with its last axis/button reading frozen in
+  // place (e.g. a stick that was pushed at the moment of disconnect stays
+  // "held" forever). Genuine hardware advances `timestamp` on every poll;
+  // a frozen timestamp while a stick reads off-center is the signature of
+  // a ghost entry, not a real held stick. Tracked so it can be force-
+  // dropped rather than trusted indefinitely.
+  private lastTimestamp: number | null = null;
+  private stuckSince: number | null = null;
 
   subscribe(listener: Listener): () => void {
     this.listeners.add(listener);
@@ -50,17 +60,34 @@ class GamepadPoller {
     window.removeEventListener('gamepaddisconnected', this.onDisconnect);
     this.lastButtons = [];
     this.lockedIndex = null;
+    this.lastTimestamp = null;
+    this.stuckSince = null;
   }
 
-  private onDisconnect = (e: Event) => {
-    const ge = e as GamepadEvent;
-    if (this.lockedIndex !== null && ge.gamepad && ge.gamepad.index === this.lockedIndex) {
-      // Our locked controller specifically disconnected — release the lock
-      // so the next poll can pick (and lock onto) whichever is available.
-      this.lockedIndex = null;
-    }
+  private onDisconnect = () => {
+    // Unconditionally clear on ANY disconnect event, rather than only when
+    // it matches our locked index — some platforms don't reliably populate
+    // event.gamepad, and re-locking onto whatever's actually still present
+    // next poll is always cheap and correct either way.
+    this.lockedIndex = null;
     this.lastButtons = [];
+    this.lastTimestamp = null;
+    this.stuckSince = null;
   };
+
+  private forceDisconnected() {
+    this.lockedIndex = null;
+    this.lastButtons = [];
+    this.lastTimestamp = null;
+    this.stuckSince = null;
+    const state: GamepadPollState = {
+      connected: false,
+      justPressed: () => false,
+      pressed: () => false,
+      axes: [],
+    };
+    this.listeners.forEach(l => { try { l(state); } catch {} });
+  }
 
   private poll() {
     try {
@@ -87,8 +114,23 @@ class GamepadPoller {
         };
         this.listeners.forEach(l => { try { l(state); } catch {} });
         this.lastButtons = [];
+        this.lastTimestamp = null;
+        this.stuckSince = null;
         return;
       }
+
+      // Ghost-gamepad check — see field comment above.
+      const axisMagnitude = gp.axes.reduce((max, a) => Math.max(max, Math.abs(a)), 0);
+      if (axisMagnitude > 0.2 && gp.timestamp === this.lastTimestamp) {
+        if (this.stuckSince === null) this.stuckSince = Date.now();
+        if (Date.now() - this.stuckSince > 1500) {
+          this.forceDisconnected();
+          return;
+        }
+      } else {
+        this.stuckSince = null;
+      }
+      this.lastTimestamp = gp.timestamp;
 
       const buttons = gp.buttons.map(b => b.pressed);
       const prev = this.lastButtons;
