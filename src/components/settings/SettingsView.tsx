@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
+import { exit } from '@tauri-apps/plugin-process';
 import { useStore } from '@/store';
 import type { AppSettings, GamepadMapping } from '@/types';
 import { useMenuGamepad, type SettingsSubTab } from '@/utils/useMenuGamepad';
 import { gamepadPoller } from '@/utils/gamepadPoller';
+import ConfirmModal from '@/components/shared/ConfirmModal';
 
 const DEFAULT_MAPPING: GamepadMapping = {
-  select: 0, back: 1, skipCorrect: 2, skipIncorrect: 3,
+  select: 0, back: 1, skipCorrect: 3, skipIncorrect: 2,
   media: 4, references: 5, pause: 9, score: 8,
   lt: 6, rt: 7,
 };
@@ -53,6 +55,7 @@ export default function SettingsView() {
   const [remapAllActive, setRemapAllActive] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [livePressed, setLivePressed] = useState<number | null>(null);
+  const [showQuitAppConfirm, setShowQuitAppConfirm] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -132,13 +135,14 @@ export default function SettingsView() {
   };
 
   const onNavigateSubTab = useCallback((t: SettingsSubTab) => setTab(t), []);
-  const itemCountForTab = tab === 'quiz' ? 3 : tab === 'theme' ? 1 : 0;
+  const itemCountForTab = tab === 'quiz' ? 4 : tab === 'theme' ? 1 : 0;
 
   const onConfirm = useCallback(() => {
     if (tab === 'quiz') {
       if (focusedIndex === 0) saveSettings({ ...settings, instantFeedback: !settings.instantFeedback });
       if (focusedIndex === 1) saveSettings({ ...settings, shuffleQuestions: !settings.shuffleQuestions });
-      if (focusedIndex === 2) {
+      if (focusedIndex === 2) saveSettings({ ...settings, shuffleAnswers: !settings.shuffleAnswers });
+      if (focusedIndex === 3) {
         const next = !settings.untilCorrectMode;
         saveSettings({
           ...settings,
@@ -157,7 +161,10 @@ export default function SettingsView() {
     }
   }, [tab, focusedIndex, settings]);
 
-  const onBack = useCallback(() => { navigate('/library'); }, [navigate]);
+  const onBack = useCallback(() => {
+    if (showQuitAppConfirm) { setShowQuitAppConfirm(false); return; }
+    setShowQuitAppConfirm(true); // B on Settings — prompt to quit the app
+  }, [showQuitAppConfirm]);
 
   useMenuGamepad({
     currentPage: 'settings',
@@ -169,7 +176,7 @@ export default function SettingsView() {
     onFocusChange: setFocusedIndex,
     onConfirm,
     onBack,
-    enabled: !remapAllActive,
+    enabled: !remapAllActive && !showQuitAppConfirm,
   });
 
   const TABS: SettingsSubTab[] = ['quiz', 'gamepad', 'theme', 'about', 'version'];
@@ -235,9 +242,26 @@ export default function SettingsView() {
 
           <div className="card" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            outline: focusedIndex === 2 ? '2px solid #000' : 'none', outlineOffset: 2,
+          }}>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>Shuffle Answers</div>
+              <div style={{ fontSize: 12, color: '#888', marginTop: 3 }}>
+                Randomise multiple-choice answer order for each question
+              </div>
+            </div>
+            <button className={`toggle ${settings.shuffleAnswers ? 'on' : 'off'}`}
+              onClick={() => saveSettings({ ...settings, shuffleAnswers: !settings.shuffleAnswers })}
+              aria-label="Toggle shuffle answers">
+              <div className="toggle-knob" />
+            </button>
+          </div>
+
+          <div className="card" style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             background: settings.untilCorrectMode ? '#1a1a1a' : '#f4f4f4',
             borderColor: '#000',
-            outline: focusedIndex === 2 ? '2px solid #000' : 'none', outlineOffset: 2,
+            outline: focusedIndex === 3 ? '2px solid #000' : 'none', outlineOffset: 2,
             transition: 'background 0.15s ease',
           }}>
             <div>
@@ -304,9 +328,10 @@ export default function SettingsView() {
           <div>
             <div className="section-label">Actions</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {ACTIONS.map(action => {
+              {ACTIONS.map((action, actionIndex) => {
                 const btnIndex = localMapping[action.key];
                 const pressed = livePressed === btnIndex;
+                const displayNumber = actionIndex + 1; // cosmetic only — A=1, B=2, X=3, Y=4, ... — actual input mapping is unaffected
                 return (
                   <div key={action.key} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -326,7 +351,7 @@ export default function SettingsView() {
                     </div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
                       color: pressed ? '#fff' : '#666' }}>
-                      {`Button ${btnIndex}`}
+                      {`Button ${displayNumber}`}
                     </div>
                   </div>
                 );
@@ -480,6 +505,17 @@ export default function SettingsView() {
             ))}
           </div>
         </div>
+      )}
+
+      {showQuitAppConfirm && (
+        <ConfirmModal
+          title="Quit LAMBDAn"
+          message="Are you sure you want to quit LAMBDAn?"
+          onConfirm={() => exit(0)}
+          onCancel={() => setShowQuitAppConfirm(false)}
+          confirmLabel="Yes, Quit"
+          cancelLabel="No"
+        />
       )}
     </div>
   );
