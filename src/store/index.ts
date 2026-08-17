@@ -62,7 +62,7 @@ interface AppState {
 }
 
 const defaultGamepad: GamepadMapping = {
-  select: 0, back: 1, skipCorrect: 2, skipIncorrect: 3,
+  select: 0, back: 1, skipCorrect: 3, skipIncorrect: 2,
   media: 4, references: 5, pause: 9, score: 8,
   lt: 6, rt: 7,
 };
@@ -71,7 +71,7 @@ export const useStore = create<AppState>((set) => ({
   folders: [],
   quizzes: [],
   history: [],
-  settings: { instantFeedback: true, shuffleQuestions: false, untilCorrectMode: false, buttonIconStyle: 'xbox' },
+  settings: { instantFeedback: true, shuffleQuestions: false, untilCorrectMode: false, buttonIconStyle: 'xbox', shuffleAnswers: true },
   gamepadMapping: defaultGamepad,
 
   setFolders: (folders) => set({ folders }),
