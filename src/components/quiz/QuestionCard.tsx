@@ -59,6 +59,7 @@ export default function QuestionCard({
             )}
           </>
         )}
+        {answered && question.explanation && <ExplanationBox text={question.explanation} />}
         {answered && <NextRow answer={answer} isLast={isLast} onNext={onNext} onFinish={onFinish} essay />}
       </div>
     );
@@ -102,7 +103,20 @@ export default function QuestionCard({
             : `✗ Incorrect — correct answer: ${question.remappedAnswer}`}
         </div>
       )}
+      {answered && instantFeedback && question.explanation && <ExplanationBox text={question.explanation} />}
       {answered && <NextRow answer={answer} isLast={isLast} onNext={onNext} onFinish={onFinish} />}
+    </div>
+  );
+}
+
+function ExplanationBox({ text }: { text: string }) {
+  return (
+    <div className="card-muted" style={{ fontSize: 13, lineHeight: 1.6 }}>
+      <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: 0.5, textTransform: 'uppercase',
+        color: '#888', marginBottom: 4 }}>
+        Explanation
+      </div>
+      <div style={{ whiteSpace: 'pre-wrap' }}>{text}</div>
     </div>
   );
 }
