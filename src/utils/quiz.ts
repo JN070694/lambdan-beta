@@ -9,7 +9,7 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-export function prepareQuestion(q: Question): ShuffledQuestion {
+export function prepareQuestion(q: Question, shuffleAnswers: boolean = true): ShuffledQuestion {
   const labels = ['A', 'B', 'C', 'D', 'E'];
   const rawOptions: ShuffledOption[] = [];
 
@@ -22,7 +22,7 @@ export function prepareQuestion(q: Question): ShuffledQuestion {
     if (text.trim()) rawOptions.push({ label, text, originalLabel: label });
   }
 
-  const shouldShuffle = q.questionType === 'MC';
+  const shouldShuffle = q.questionType === 'MC' && shuffleAnswers;
   const options = shouldShuffle ? shuffle(rawOptions) : rawOptions;
 
   const shuffledOptions: ShuffledOption[] = options.map((opt, i) => ({
@@ -35,8 +35,8 @@ export function prepareQuestion(q: Question): ShuffledQuestion {
   return { ...q, shuffledOptions, remappedAnswer };
 }
 
-export function prepareQuestions(questions: Question[]): ShuffledQuestion[] {
-  return questions.map(prepareQuestion);
+export function prepareQuestions(questions: Question[], shuffleAnswers: boolean = true): ShuffledQuestion[] {
+  return questions.map(q => prepareQuestion(q, shuffleAnswers));
 }
 
 export function formatTime(seconds: number): string {
