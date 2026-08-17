@@ -33,6 +33,9 @@ interface UseQuizGamepadOptions {
   onQuitRequest?: () => void;
   pauseMenuIndex?: number;
   setPauseMenuIndex?: (i: number) => void;
+  /** When true, this hook does nothing — use while a modal (e.g. quit-confirm) is
+   * up front-and-center, so it doesn't fight with that modal's own input handling. */
+  suppressed?: boolean;
 }
 
 export function useQuizGamepad(opts: UseQuizGamepadOptions) {
@@ -42,6 +45,7 @@ export function useQuizGamepad(opts: UseQuizGamepadOptions) {
   useEffect(() => {
     return gamepadPoller.subscribe(state => {
       if (!state.connected) return;
+      if (opts.suppressed) return;
       const { justPressed, axes } = state;
 
       const store = useStore.getState();
@@ -187,5 +191,6 @@ export function useQuizGamepad(opts: UseQuizGamepadOptions) {
     opts.optionFocusIndex, opts.optionCount,
     opts.onSelectFocused, opts.onAdvance, opts.onToggleScore,
     opts.onResume, opts.onQuitRequest, opts.pauseMenuIndex, opts.setPauseMenuIndex,
+    opts.suppressed,
   ]);
 }
