@@ -71,9 +71,12 @@ export default function SettingsView() {
   useEffect(() => { setFocusedIndex(0); setTestModeActive(false); }, [tab]);
 
   // Live highlight: show which action row corresponds to whatever button
-  // is currently pressed, while browsing the Gamepad tab (not during remap).
+  // is currently pressed. Only runs while Test Controller mode is active —
+  // outside test mode, pressing buttons still drives normal menu navigation
+  // (B = quit, LT/RT = switch tabs, etc.), so highlighting them here without
+  // being in test mode would wrongly suggest it's safe to press freely.
   useEffect(() => {
-    if (tab !== 'gamepad' || remapAllActive) { setLivePressed(null); return; }
+    if (tab !== 'gamepad' || remapAllActive || !testModeActive) { setLivePressed(null); return; }
     return gamepadPoller.subscribe(state => {
       if (!state.connected) { setLivePressed(null); return; }
       let found: number | null = null;
@@ -82,7 +85,7 @@ export default function SettingsView() {
       }
       setLivePressed(found);
     });
-  }, [tab, remapAllActive]);
+  }, [tab, remapAllActive, testModeActive]);
 
   const saveSettings = async (s: AppSettings) => {
     setSettings(s);
@@ -316,7 +319,7 @@ export default function SettingsView() {
                 onClick={() => setTestModeActive(v => !v)}
                 disabled={remapAllActive}
                 style={testModeActive ? { background: '#000', color: '#fff', border: '1px solid #000' } : undefined}>
-                {testModeActive ? 'Stop Test' : 'Test Controller'}
+                {testModeActive ? 'End Test' : 'Test Controller'}
               </button>
               <div style={{ display: 'flex', gap: 8,
                 opacity: testModeActive ? 0.35 : 1, pointerEvents: testModeActive ? 'none' : 'auto',
