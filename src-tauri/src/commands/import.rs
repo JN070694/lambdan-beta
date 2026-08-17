@@ -280,8 +280,9 @@ pub async fn import_pack(
             let r = record?;
             let get = |i: usize| r.get(i).unwrap_or("").trim().to_string();
 
-            let nid = get(9).to_lowercase();
-            let group = get(8);
+            let nid = get(10).to_lowercase();
+            let group = get(9);
+            let explanation = get(8);
             let option_a = get(2);
             let option_b = get(3);
             let option_c = get(4);
@@ -306,13 +307,13 @@ pub async fn import_pack(
             conn.execute(
                 "INSERT INTO questions
                  (id, quiz_id, question_number, question_text, option_a, option_b, option_c,
-                  option_d, option_e, correct_answer, nid, image_path, nid_variants, grp, question_type)
-                 VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15)",
+                  option_d, option_e, correct_answer, nid, image_path, nid_variants, grp, question_type, explanation)
+                 VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16)",
                 params![
                     qid, quiz_id, get(0), get(1),
                     option_a, option_b, option_c, get(5), get(6),
                     get(7), nid, image_path, nid_variants_json,
-                    group, question_type
+                    group, question_type, explanation
                 ],
             )?;
             question_count += 1;
