@@ -41,6 +41,7 @@ export interface Question {
   nidVariants: string[];
   group: string;
   questionType: QuestionType;
+  explanation: string;
 }
 
 export interface ShuffledOption {
