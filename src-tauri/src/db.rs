@@ -40,7 +40,8 @@ pub fn init(path: PathBuf) -> Result<()> {
             image_path TEXT,
             nid_variants TEXT NOT NULL DEFAULT '[]',
             grp TEXT NOT NULL DEFAULT '',
-            question_type TEXT NOT NULL
+            question_type TEXT NOT NULL,
+            explanation TEXT NOT NULL DEFAULT ''
         );
 
         CREATE TABLE IF NOT EXISTS history (
@@ -65,6 +66,10 @@ pub fn init(path: PathBuf) -> Result<()> {
             mapping_json TEXT NOT NULL
         );
     ")?;
+
+    // Migration: add explanation column for installs created before this field existed.
+    // Errors (e.g. column already exists on a fresh DB) are expected and ignored.
+    conn.execute("ALTER TABLE questions ADD COLUMN explanation TEXT NOT NULL DEFAULT ''", []).ok();
 
     DB.set(Mutex::new(conn)).ok();
     Ok(())
