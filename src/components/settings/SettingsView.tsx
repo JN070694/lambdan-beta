@@ -508,14 +508,9 @@ export default function SettingsView() {
       {tab === 'version' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div className="section-label">Version</div>
-          <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '14px 10px' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700 }}>
-              Developer: Jonathan Nicholson
-            </span>
-          </div>
           <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
+              ['Developer', 'Jonathan Nicholson'],
               ['Version', '1.0.0-beta'],
               ['Built with', 'Tauri v2 · React · TypeScript'],
               ['Database', 'SQLite (rusqlite)'],
