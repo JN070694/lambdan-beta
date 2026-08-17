@@ -80,7 +80,7 @@ pub async fn get_questions(quiz_id: String) -> std::result::Result<Vec<Question>
     let conn = db::get().lock().unwrap();
     let mut stmt = conn.prepare(
         "SELECT id, quiz_id, question_number, question_text, option_a, option_b, option_c,
-         option_d, option_e, correct_answer, nid, image_path, nid_variants, grp, question_type
+         option_d, option_e, correct_answer, nid, image_path, nid_variants, grp, question_type, explanation
          FROM questions WHERE quiz_id=?1 ORDER BY CAST(question_number AS INTEGER)"
     )?;
     let result: Vec<Question> = stmt.query_map(params![quiz_id], |row| {
@@ -92,6 +92,7 @@ pub async fn get_questions(quiz_id: String) -> std::result::Result<Vec<Question>
             option_c: row.get(6)?, option_d: row.get(7)?, option_e: row.get(8)?,
             correct_answer: row.get(9)?, nid: row.get(10)?, image_path: row.get(11)?,
             nid_variants, group: row.get(13)?, question_type: row.get(14)?,
+            explanation: row.get(15)?,
         })
     })?.filter_map(|r| r.ok()).collect();
     Ok(result)
@@ -282,7 +283,7 @@ pub async fn export_missed(
     for qid in &missed_ids {
         if let Ok(q) = conn.query_row(
             "SELECT id, quiz_id, question_number, question_text, option_a, option_b, option_c,
-             option_d, option_e, correct_answer, nid, image_path, nid_variants, grp, question_type
+             option_d, option_e, correct_answer, nid, image_path, nid_variants, grp, question_type, explanation
              FROM questions WHERE id=?1",
             params![qid],
             |row| {
@@ -294,16 +295,18 @@ pub async fn export_missed(
                     option_c: row.get(6)?, option_d: row.get(7)?, option_e: row.get(8)?,
                     correct_answer: row.get(9)?, nid: row.get(10)?, image_path: row.get(11)?,
                     nid_variants, group: row.get(13)?, question_type: row.get(14)?,
+                    explanation: row.get(15)?,
                 })
             }
         ) { questions.push(q); }
     }
 
-    // Build the CSV in the exact same 10-column format used for import
+    // Build the CSV in the exact same 11-column format used for import
     let mut csv_rows = String::new();
     for q in &questions {
         let fields = [&q.question_number, &q.question_text, &q.option_a, &q.option_b,
-                      &q.option_c, &q.option_d, &q.option_e, &q.correct_answer, &q.group, &q.nid];
+                      &q.option_c, &q.option_d, &q.option_e, &q.correct_answer,
+                      &q.explanation, &q.group, &q.nid];
         let row: Vec<String> = fields.iter().map(|f| {
             if f.contains(',') || f.contains('"') || f.contains('\n') {
                 format!("\"{}\"", f.replace('"', "\"\""))
