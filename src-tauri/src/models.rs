@@ -49,6 +49,7 @@ pub struct Question {
     pub nid_variants: Vec<String>,
     pub group: String,
     pub question_type: String,
+    pub explanation: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
