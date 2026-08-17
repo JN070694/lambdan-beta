@@ -38,35 +38,45 @@ export default function QuizView() {
   const [totalUnique, setTotalUnique] = useState(0);
   const [attemptCount, setAttemptCount] = useState(0);
 
-  useEffect(() => {
+  const loadQuiz = useCallback(async () => {
     if (!quizId) return;
-    (async () => {
-      try {
-        const [allQuizzes, allQs] = await Promise.all([
-          invoke<Quiz[]>('get_all_quizzes'),
-          invoke<Question[]>('get_questions', { quizId }),
-        ]);
-        const quizObj = allQuizzes.find(x => x.id === quizId);
-        if (!quizObj) { navigate('/library'); return; }
+    setLoading(true);
+    try {
+      const [allQuizzes, allQs] = await Promise.all([
+        invoke<Quiz[]>('get_all_quizzes'),
+        invoke<Question[]>('get_questions', { quizId }),
+      ]);
+      const quizObj = allQuizzes.find(x => x.id === quizId);
+      if (!quizObj) { navigate('/library'); return; }
 
-        const prepared = settings.shuffleQuestions
-          ? prepareQuestions(shuffle([...allQs]), settings.shuffleAnswers)
-          : prepareQuestions(allQs, settings.shuffleAnswers);
+      const prepared = settings.shuffleQuestions
+        ? prepareQuestions(shuffle([...allQs]), settings.shuffleAnswers)
+        : prepareQuestions(allQs, settings.shuffleAnswers);
 
-        startSession(quizObj, prepared);
+      startSession(quizObj, prepared);
 
-        if (untilCorrect) {
-          setQueue(shuffle([...prepared]));
-          setMasteredIds(new Set());
-          setTotalUnique(prepared.length);
-          setAttemptCount(0);
-        }
-      } finally {
-        setLoading(false);
+      if (untilCorrect) {
+        setQueue(shuffle([...prepared]));
+        setMasteredIds(new Set());
+        setTotalUnique(prepared.length);
+        setAttemptCount(0);
       }
-    })();
+    } finally {
+      setLoading(false);
+    }
+  }, [quizId, untilCorrect, settings.shuffleQuestions, settings.shuffleAnswers, startSession, navigate]);
+
+  useEffect(() => {
+    loadQuiz();
     return () => clearSession();
   }, [quizId]);
+
+  const handleRetakeQuiz = useCallback(() => {
+    savingRef.current = false;
+    setElapsed(0);
+    setShowScore(false);
+    loadQuiz();
+  }, [loadQuiz]);
 
   useEffect(() => { setOptionFocusIndex(0); }, [currentIndex, queue[0]?.id]);
 
@@ -196,7 +206,7 @@ export default function QuizView() {
   if (!quiz) return null;
   if (finished) {
     if (untilCorrect) return <UntilCorrectEndScreen quizTitle={quiz.title} attempts={attemptCount} elapsed={elapsed} quiz={quiz} />;
-    return <QuizEndScreen />;
+    return <QuizEndScreen onRetakeQuiz={handleRetakeQuiz} />;
   }
 
   const showLegend = !mediaOpen && !refsOpen;
