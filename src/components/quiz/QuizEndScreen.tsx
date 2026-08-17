@@ -6,7 +6,7 @@ import { formatTime } from '@/utils/quiz';
 import { useState, useEffect, useRef } from 'react';
 import { gamepadPoller } from '@/utils/gamepadPoller';
 
-export default function QuizEndScreen() {
+export default function QuizEndScreen({ onRetakeQuiz }: { onRetakeQuiz?: () => void }) {
   const navigate = useNavigate();
   const { session, clearSession, history, folders } = useStore();
   const { quiz } = session;
@@ -21,16 +21,22 @@ export default function QuizEndScreen() {
 
   const hasMissed = entry.questionResults.some(r => !r.correct);
   const returnLabel = quiz.folderId ? 'Back to Folder' : 'Return to Library';
-  const buttons = [returnLabel, ...(hasMissed ? ['Retake Missed', 'Export Missed'] : [])];
+  const buttons = [
+    returnLabel,
+    ...(onRetakeQuiz ? ['Retake Quiz'] : []),
+    ...(hasMissed ? ['Retake Missed', 'Export Missed'] : []),
+  ];
 
   const handleSelect = (idx: number) => {
-    if (idx === 0) { clearSession(); navigate(backPath); return; }
-    if (idx === 1 && hasMissed) {
+    const label = buttons[idx];
+    if (label === returnLabel) { clearSession(); navigate(backPath); return; }
+    if (label === 'Retake Quiz') { onRetakeQuiz?.(); return; }
+    if (label === 'Retake Missed') {
       const missed = entry.questionResults.filter(r => !r.correct).map(r => r.questionId);
       navigate(`/quiz/${quiz.id}/retake`, { state: { missedIds: missed } });
       return;
     }
-    if (idx === 2 && hasMissed) {
+    if (label === 'Export Missed') {
       const folder = quiz.folderId ? folders.find(f => f.id === quiz.folderId) : null;
       const sanitize = (s: string) => s.replace(/[\\/:*?"<>|]/g, '').trim();
       const parts = [
