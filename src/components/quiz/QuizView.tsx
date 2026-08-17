@@ -50,8 +50,8 @@ export default function QuizView() {
         if (!quizObj) { navigate('/library'); return; }
 
         const prepared = settings.shuffleQuestions
-          ? prepareQuestions(shuffle([...allQs]))
-          : prepareQuestions(allQs);
+          ? prepareQuestions(shuffle([...allQs]), settings.shuffleAnswers)
+          : prepareQuestions(allQs, settings.shuffleAnswers);
 
         startSession(quizObj, prepared);
 
