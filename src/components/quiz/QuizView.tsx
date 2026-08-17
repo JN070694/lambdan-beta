@@ -187,6 +187,7 @@ export default function QuizView() {
     onQuitRequest: () => setShowQuitConfirm(true),
     pauseMenuIndex,
     setPauseMenuIndex,
+    suppressed: showQuitConfirm,
   });
 
   if (loading) return (
