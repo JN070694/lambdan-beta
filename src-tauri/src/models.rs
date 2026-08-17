@@ -83,9 +83,12 @@ pub struct AppSettings {
     pub until_correct_mode: bool,
     #[serde(default = "default_icon_style")]
     pub button_icon_style: String,
+    #[serde(default = "default_shuffle_answers")]
+    pub shuffle_answers: bool,
 }
 
 fn default_icon_style() -> String { "xbox".to_string() }
+fn default_shuffle_answers() -> bool { true }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -110,7 +113,7 @@ fn default_rt() -> u32 { 7 }
 impl Default for GamepadMapping {
     fn default() -> Self {
         Self {
-            select: 0, back: 1, skip_correct: 2, skip_incorrect: 3,
+            select: 0, back: 1, skip_correct: 3, skip_incorrect: 2,
             media: 4, references: 5, pause: 9, score: 8,
             lt: 6, rt: 7,
         }
