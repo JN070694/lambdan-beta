@@ -71,7 +71,7 @@ export const useStore = create<AppState>((set) => ({
   folders: [],
   quizzes: [],
   history: [],
-  settings: { instantFeedback: true, shuffleQuestions: false, untilCorrectMode: false, buttonIconStyle: 'xbox', shuffleAnswers: true },
+  settings: { instantFeedback: true, shuffleQuestions: false, untilCorrectMode: false, buttonIconStyle: 'xbox', shuffleAnswers: true, displayScale: 'auto' },
   gamepadMapping: defaultGamepad,
 
   setFolders: (folders) => set({ folders }),
