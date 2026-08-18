@@ -11,7 +11,7 @@ import ConfirmModal from '@/components/shared/ConfirmModal';
 const DEFAULT_MAPPING: GamepadMapping = {
   select: 0, back: 1, skipCorrect: 3, skipIncorrect: 2,
   media: 4, references: 5, pause: 9, score: 8,
-  lt: 6, rt: 7,
+  lt: 6, rt: 7, ls: 10, rs: 11,
 };
 
 const ACTIONS: { key: keyof GamepadMapping; label: string; note?: string }[] = [
@@ -23,8 +23,10 @@ const ACTIONS: { key: keyof GamepadMapping; label: string; note?: string }[] = [
   { key: 'references',    label: 'RB — References / Tab Right' },
   { key: 'lt',            label: 'LT — Page Left', note: 'main menus only' },
   { key: 'rt',            label: 'RT — Page Right', note: 'main menus only' },
-  { key: 'pause',         label: 'Start — Pause', note: 'active quizzes only' },
   { key: 'score',         label: 'Select/View — See Score', note: 'active quizzes only' },
+  { key: 'pause',         label: 'Start — Pause', note: 'active quizzes only' },
+  { key: 'ls',            label: 'LS — Expand Media', note: 'not yet functional' },
+  { key: 'rs',            label: 'RS — Expand References', note: 'not yet functional' },
 ];
 
 const TAB_LABELS: Record<SettingsSubTab, string> = {
