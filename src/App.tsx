@@ -10,11 +10,13 @@ import RetakeView from '@/components/quiz/RetakeView';
 import HistoryView from '@/components/history/HistoryView';
 import SettingsView from '@/components/settings/SettingsView';
 import { useRightStickScroll } from '@/utils/useRightStickScroll';
+import { useAutoScale } from '@/utils/useAutoScale';
 
 export default function App() {
-  const { setFolders, setQuizzes, setHistory, setSettings, setGamepadMapping, session } = useStore();
+  const { setFolders, setQuizzes, setHistory, setSettings, setGamepadMapping, session, settings } = useStore();
 
   useRightStickScroll();
+  useAutoScale(settings.displayScale);
 
   useEffect(() => {
     Promise.all([
