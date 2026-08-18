@@ -64,7 +64,7 @@ interface AppState {
 const defaultGamepad: GamepadMapping = {
   select: 0, back: 1, skipCorrect: 3, skipIncorrect: 2,
   media: 4, references: 5, pause: 9, score: 8,
-  lt: 6, rt: 7,
+  lt: 6, rt: 7, ls: 10, rs: 11,
 };
 
 export const useStore = create<AppState>((set) => ({
