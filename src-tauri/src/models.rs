@@ -86,10 +86,13 @@ pub struct AppSettings {
     pub button_icon_style: String,
     #[serde(default = "default_shuffle_answers")]
     pub shuffle_answers: bool,
+    #[serde(default = "default_display_scale")]
+    pub display_scale: String,
 }
 
 fn default_icon_style() -> String { "xbox".to_string() }
 fn default_shuffle_answers() -> bool { true }
+fn default_display_scale() -> String { "auto".to_string() }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
