@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
@@ -23,6 +23,8 @@ export default function LibraryView() {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [showNewFolder, setShowNewFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
+  const importRowRef = useRef<HTMLDivElement | null>(null);
+  const [importRowTop, setImportRowTop] = useState(92); // sensible default before first measurement
   const [renamingFolder, setRenamingFolder] = useState<Folder | null>(null);
   const [renameValue, setRenameValue] = useState('');
   const [focusedIndex, setFocusedIndex] = useState(0);
@@ -47,6 +49,21 @@ export default function LibraryView() {
 
   useEffect(() => { refreshAll(); }, []);
   useEffect(() => { setFocusedIndex(0); }, [folderId]);
+
+  // Keep the floating gamepad legend's top edge aligned with the Import
+  // row's actual top edge — which shifts down when a "Back to Library"
+  // button is showing above it (inside a folder) — rather than a guessed
+  // constant that would drift out of alignment in that case.
+  useEffect(() => {
+    const measure = () => {
+      if (importRowRef.current) {
+        setImportRowTop(importRowRef.current.getBoundingClientRect().top);
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [folderId, currentFolder]);
 
   const visibleQuizzes = folderId
     ? quizzes.filter(q => q.folderId === folderId)
@@ -227,7 +244,7 @@ export default function LibraryView() {
 
   return (
     <div>
-      <GamepadLegend items={legendItems} />
+      <GamepadLegend items={legendItems} top={importRowTop} />
 
       {folderId && currentFolder && (
         <button
@@ -238,7 +255,7 @@ export default function LibraryView() {
         </button>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 22 }}>
+      <div ref={importRowRef} style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 22 }}>
         {!folderId && (
           <button className="btn btn-secondary" onClick={() => setShowNewFolder(true)}>
             + New Folder
