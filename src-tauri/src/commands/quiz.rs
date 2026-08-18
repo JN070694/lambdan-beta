@@ -202,10 +202,14 @@ pub async fn get_settings() -> std::result::Result<AppSettings, LambdanError> {
         "SELECT value FROM settings WHERE key='shuffle_answers'",
         [], |r| r.get::<_, String>(0),
     ).map(|v| v == "true").unwrap_or(true);
+    let display_scale: String = conn.query_row(
+        "SELECT value FROM settings WHERE key='display_scale'",
+        [], |r| r.get::<_, String>(0),
+    ).unwrap_or_else(|_| "auto".to_string());
     Ok(AppSettings {
         instant_feedback: instant, shuffle_questions: shuffle,
         until_correct_mode: until_correct, button_icon_style: icon_style,
-        shuffle_answers,
+        shuffle_answers, display_scale,
     })
 }
 
@@ -231,6 +235,10 @@ pub async fn save_settings(settings: AppSettings) -> std::result::Result<(), Lam
     conn.execute(
         "INSERT OR REPLACE INTO settings (key, value) VALUES ('shuffle_answers', ?1)",
         params![if settings.shuffle_answers { "true" } else { "false" }],
+    )?;
+    conn.execute(
+        "INSERT OR REPLACE INTO settings (key, value) VALUES ('display_scale', ?1)",
+        params![settings.display_scale],
     )?;
     Ok(())
 }
