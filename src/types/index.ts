@@ -95,6 +95,8 @@ export interface GamepadMapping {
   score: number;
   lt: number;
   rt: number;
+  ls: number;
+  rs: number;
 }
 
 export interface ImportResult {
