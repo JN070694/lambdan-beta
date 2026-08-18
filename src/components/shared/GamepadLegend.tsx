@@ -8,23 +8,28 @@ interface LegendItem {
 
 interface Props {
   items: LegendItem[];
+  /** Distance from the top of the viewport, in px, to align this box's top
+   * edge with. When omitted, falls back to the original vertically-centered
+   * placement (used by Quiz/Retake views). */
+  top?: number;
 }
 
 const PLAYSTATION_GLYPHS: Record<string, string> = {
   A: '✕', B: '○', X: '□', Y: '△',
 };
 
-export default function GamepadLegend({ items }: Props) {
+export default function GamepadLegend({ items, top }: Props) {
   const connected = useGamepadConnected();
   const { settings } = useStore();
   const isPS = settings.buttonIconStyle === 'playstation';
+  const topAligned = top !== undefined;
 
   return (
     <div style={{
       position: 'fixed',
-      top: '50%',
+      top: topAligned ? top : '50%',
       right: 16,
-      transform: 'translateY(-50%)',
+      transform: topAligned ? 'none' : 'translateY(-50%)',
       zIndex: 50,
       display: 'flex',
       flexDirection: 'column',
@@ -33,7 +38,13 @@ export default function GamepadLegend({ items }: Props) {
       border: `1.5px solid ${connected ? '#000' : '#ccc'}`,
       borderRadius: 10,
       padding: '12px 14px',
-      width: 160,
+      // When top-aligned (Library), the box sits in the narrow margin to the
+      // right of the centered 900px-wide content column — width shrinks
+      // responsively so it never overlaps that column regardless of window
+      // size, instead of assuming a fixed 160px will always fit.
+      width: topAligned ? 'clamp(90px, calc((100vw - 900px) / 2 - 24px), 160px)' : 160,
+      maxHeight: topAligned ? `calc(100vh - ${top}px - 16px)` : undefined,
+      overflowY: topAligned ? 'auto' : undefined,
       opacity: connected ? 1 : 0.45,
       transition: 'opacity 0.3s ease, border-color 0.3s ease',
     }}>
