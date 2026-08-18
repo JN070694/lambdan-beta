@@ -3,7 +3,7 @@ import { useStore } from '@/store';
 import { gamepadPoller } from './gamepadPoller';
 
 export type TopNavPage = 'library' | 'history' | 'settings';
-export type SettingsSubTab = 'quiz' | 'gamepad' | 'about' | 'theme' | 'version';
+export type SettingsSubTab = 'quiz' | 'gamepad' | 'about' | 'display' | 'version';
 
 interface MenuGamepadOptions {
   currentPage: TopNavPage;
@@ -21,7 +21,7 @@ interface MenuGamepadOptions {
 }
 
 const TOP_PAGES: TopNavPage[] = ['library', 'history', 'settings'];
-const SUB_TABS: SettingsSubTab[] = ['quiz', 'gamepad', 'theme', 'about', 'version'];
+const SUB_TABS: SettingsSubTab[] = ['quiz', 'gamepad', 'display', 'about', 'version'];
 
 /**
  * Main-menu gamepad navigation. Behavior (what each button does) is fixed —
