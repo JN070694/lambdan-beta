@@ -109,17 +109,23 @@ pub struct GamepadMapping {
     pub lt: u32,
     #[serde(default = "default_rt")]
     pub rt: u32,
+    #[serde(default = "default_ls")]
+    pub ls: u32,
+    #[serde(default = "default_rs")]
+    pub rs: u32,
 }
 
 fn default_lt() -> u32 { 6 }
 fn default_rt() -> u32 { 7 }
+fn default_ls() -> u32 { 10 }
+fn default_rs() -> u32 { 11 }
 
 impl Default for GamepadMapping {
     fn default() -> Self {
         Self {
             select: 0, back: 1, skip_correct: 3, skip_incorrect: 2,
             media: 4, references: 5, pause: 9, score: 8,
-            lt: 6, rt: 7,
+            lt: 6, rt: 7, ls: 10, rs: 11,
         }
     }
 }
