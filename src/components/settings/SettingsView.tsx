@@ -30,10 +30,19 @@ const ACTIONS: { key: keyof GamepadMapping; label: string; note?: string }[] = [
 const TAB_LABELS: Record<SettingsSubTab, string> = {
   quiz: 'Quiz',
   gamepad: 'Gamepad',
-  theme: 'Theme',
+  display: 'Display',
   about: 'About',
   version: 'Version',
 };
+
+const DISPLAY_SCALE_HELP: Record<AppSettings['displayScale'], string> = {
+  auto: 'Scales up automatically as the window grows past its default size — good for most monitors.',
+  compact: 'Always stays at 1x, regardless of window size. Best for small or high-density screens (e.g. a tablet).',
+  comfortable: 'Mild auto-scaling, capped lower — for a laptop or desktop viewed at normal arm\'s-length distance.',
+  large: 'Stronger auto-scaling — for a big monitor or TV viewed from across a room.',
+};
+
+const DISPLAY_SCALE_ORDER: AppSettings['displayScale'][] = ['auto', 'compact', 'comfortable', 'large'];
 
 function TriggerIcon({ side, label }: { side: 'left' | 'right'; label: string }) {
   const flip = side === 'right';
@@ -139,7 +148,7 @@ export default function SettingsView() {
   };
 
   const onNavigateSubTab = useCallback((t: SettingsSubTab) => setTab(t), []);
-  const itemCountForTab = tab === 'quiz' ? 4 : tab === 'theme' ? 1 : 0;
+  const itemCountForTab = tab === 'quiz' ? 4 : tab === 'display' ? 2 : 0;
 
   const onConfirm = useCallback(() => {
     if (tab === 'quiz') {
@@ -155,12 +164,16 @@ export default function SettingsView() {
           shuffleQuestions: next ? true : settings.shuffleQuestions,
         });
       }
-    } else if (tab === 'theme') {
+    } else if (tab === 'display') {
       if (focusedIndex === 0) {
         saveSettings({
           ...settings,
           buttonIconStyle: settings.buttonIconStyle === 'xbox' ? 'playstation' : 'xbox',
         });
+      }
+      if (focusedIndex === 1) {
+        const idx = DISPLAY_SCALE_ORDER.indexOf(settings.displayScale);
+        saveSettings({ ...settings, displayScale: DISPLAY_SCALE_ORDER[(idx + 1) % DISPLAY_SCALE_ORDER.length] });
       }
     }
   }, [tab, focusedIndex, settings]);
@@ -183,7 +196,7 @@ export default function SettingsView() {
     enabled: !remapAllActive && !showQuitAppConfirm && !testModeActive,
   });
 
-  const TABS: SettingsSubTab[] = ['quiz', 'gamepad', 'theme', 'about', 'version'];
+  const TABS: SettingsSubTab[] = ['quiz', 'gamepad', 'display', 'about', 'version'];
 
   return (
     <div>
@@ -386,9 +399,9 @@ export default function SettingsView() {
         </div>
       )}
 
-      {tab === 'theme' && (
+      {tab === 'display' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div className="section-label">Theme</div>
+          <div className="section-label">Appearance</div>
 
           <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             outline: focusedIndex === 0 ? '2px solid #000' : 'none', outlineOffset: 2 }}>
@@ -422,9 +435,29 @@ export default function SettingsView() {
             </div>
           </div>
 
-          <div className="card" style={{ textAlign: 'center', padding: 40, color: '#aaa',
-            fontFamily: 'var(--font-mono)', fontSize: 13 }}>
-            More theme customisation coming soon.
+          <div className="section-label" style={{ marginTop: 8 }}>Display Size</div>
+
+          <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            outline: focusedIndex === 1 ? '2px solid #000' : 'none', outlineOffset: 2 }}>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>Display Size</div>
+              <div style={{ fontSize: 12, color: '#888', marginTop: 3, maxWidth: 380 }}>
+                {DISPLAY_SCALE_HELP[settings.displayScale]}
+              </div>
+            </div>
+            <select
+              value={settings.displayScale}
+              onChange={(e) => saveSettings({ ...settings, displayScale: e.target.value as AppSettings['displayScale'] })}
+              style={{
+                fontFamily: 'var(--font-mono)', fontSize: 13, padding: '8px 12px',
+                border: '1.5px solid #000', borderRadius: 6, background: '#fff', color: '#000',
+                cursor: 'pointer', flexShrink: 0,
+              }}>
+              <option value="auto">Auto (recommended)</option>
+              <option value="compact">Compact — small / tablet screens</option>
+              <option value="comfortable">Comfortable — laptop / desktop</option>
+              <option value="large">Large — TV / distance viewing</option>
+            </select>
           </div>
         </div>
       )}
