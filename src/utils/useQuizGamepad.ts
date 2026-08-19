@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from '@/store';
 import { gamepadPoller } from './gamepadPoller';
+import { openExpandedViewer } from './expandWindow';
 
 /**
  * In-quiz gamepad controls.
@@ -11,6 +12,8 @@ import { gamepadPoller } from './gamepadPoller';
  * - Y (mapped: skipIncorrect): skip + mark incorrect
  * - LB (mapped: media): toggle media panel
  * - RB (mapped: references): toggle refs panel
+ * - LS (mapped: ls): while media panel is open, expand current image into its own window
+ * - RS (mapped: rs): while refs panel is open, expand current image into its own window
  * - Start (mapped: pause): toggle pause
  * - Select/View (mapped: score): toggle score display
  *
@@ -99,6 +102,15 @@ export function useQuizGamepad(opts: UseQuizGamepadOptions) {
 
       // Overlay navigation (media variant / ref index) via D-pad left/right
       if (session.mediaOpen) {
+        if (justPressed(m.ls)) {
+          if (q.nidVariants.length > 0 && session.quiz) {
+            openExpandedViewer({
+              type: 'media', quizId: session.quiz.id, questionId: q.id,
+              index: session.mediaVariantIndex,
+            });
+          }
+          return;
+        }
         const axisX = axes[0] ?? 0;
         const left = justPressed(14) || (axisX < -0.5 && lastAxisDir.current >= 0);
         const right = justPressed(15) || (axisX > 0.5 && lastAxisDir.current <= 0);
@@ -109,6 +121,15 @@ export function useQuizGamepad(opts: UseQuizGamepadOptions) {
       }
       if (session.refsOpen) {
         const refs = session.quiz?.referenceImages ?? [];
+        if (justPressed(m.rs)) {
+          if (refs.length > 0 && session.quiz) {
+            openExpandedViewer({
+              type: 'refs', quizId: session.quiz.id,
+              index: session.refIndex,
+            });
+          }
+          return;
+        }
         const axisX = axes[0] ?? 0;
         const left = justPressed(14) || (axisX < -0.5 && lastAxisDir.current >= 0);
         const right = justPressed(15) || (axisX > 0.5 && lastAxisDir.current <= 0);
