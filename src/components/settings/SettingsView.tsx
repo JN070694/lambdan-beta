@@ -485,7 +485,8 @@ export default function SettingsView() {
             borderBottom: '1px solid var(--grey-300)', paddingBottom: 6, marginBottom: -2,
           }}>
             <span className="section-label" style={{ border: 'none', margin: 0, padding: 0 }}>How to Use</span>
-            <button className="btn btn-secondary btn-sm" onClick={handleCopyAbout}>
+            <button className="btn btn-secondary btn-sm" onClick={handleCopyAbout}
+              style={{ background: '#000', color: '#fff', border: '1px solid #000' }}>
               {aboutCopied ? '✓ Copied' : 'Copy'}
             </button>
           </div>
@@ -525,7 +526,7 @@ export default function SettingsView() {
 
             <p style={{ fontWeight: 700, marginBottom: 4 }}>CSV question formats</p>
             <p style={{ marginBottom: 6 }}>
-              Each row has 11 comma-separated columns:
+              Each row has 11 comma-separated fields:
             </p>
             <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
@@ -534,22 +535,23 @@ export default function SettingsView() {
 
             <div style={{ background: '#fff8e1', border: '1px solid #e8d38a', borderRadius: 6,
               padding: '8px 10px', marginBottom: 14, fontSize: 12, lineHeight: 1.6 }}>
-              <strong>Note:</strong> for True / False questions, column 8 (Answer) should be{' '}
-              <code>A</code> for True and <code>B</code> for False — the same A/B columns used by
-              Multiple Choice — so it always points to the correct option.
+              <strong>Note:</strong> field 8 (Answer) holds the correct option's letter (<code>A</code>–<code>E</code>)
+              for Multiple Choice and True/False questions — for True/False, that means <code>A</code> for
+              True and <code>B</code> for False, the same A/B fields used by Multiple Choice. For Essay
+              questions, field 8 instead holds the full model answer text rather than a letter.
             </div>
 
             <p style={{ fontWeight: 600, marginBottom: 4, marginTop: 8 }}>Multiple Choice</p>
-            <p style={{ marginBottom: 6 }}>Fill in options A–E (at least A and B). Set column 8 to the correct letter.</p>
+            <p style={{ marginBottom: 6 }}>Fill in options A–E (at least A and B). Set field 8 to the correct letter.</p>
             <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
-{`1,What is 2+2?,One,Two,Three,Four,,C,2 + 2 counts four total units.,Math,`}
+{`1,What is 2+2?,One,Two,Three,Four,,D,2 + 2 counts four total units.,Math,`}
             </pre>
 
             <p style={{ fontWeight: 600, marginBottom: 4 }}>True / False</p>
             <p style={{ marginBottom: 6 }}>
-              Set column 3 to <code>True</code>, column 4 to <code>False</code>, leave C–E empty.
-              Set column 8 to <code>A</code> (true) or <code>B</code> (false).
+              Set field 3 to <code>True</code>, field 4 to <code>False</code>, leave C–E empty.
+              Set field 8 to <code>A</code> (true) or <code>B</code> (false).
             </p>
             <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
@@ -558,7 +560,7 @@ export default function SettingsView() {
 
             <p style={{ fontWeight: 600, marginBottom: 4 }}>Essay / Short Answer</p>
             <p style={{ marginBottom: 6 }}>
-              Leave all option columns (A–E) empty. Put the model answer in column 8.
+              Leave all option fields (A–E) empty. Put the model answer in field 8.
               The app will show a "Show Answer" prompt — you then mark yourself correct or incorrect.
             </p>
             <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
@@ -566,9 +568,9 @@ export default function SettingsView() {
 {`3,Explain supply and demand.,,,,,,The law of supply and demand describes how price and quantity interact in a market.,,Economics,`}
             </pre>
 
-            <p style={{ fontWeight: 700, marginBottom: 4, marginTop: 8 }}>Explanation column</p>
+            <p style={{ fontWeight: 700, marginBottom: 4, marginTop: 8 }}>Explanation field</p>
             <p style={{ marginBottom: 0 }}>
-              Column 9 is optional but common — a short paragraph or formula showing how to arrive
+              Field 9 is optional but common — a short paragraph or formula showing how to arrive
               at the answer. When filled in, it appears beneath the correct/incorrect feedback
               after you answer a question during a quiz.
             </p>
