@@ -25,11 +25,20 @@ export function useRightStickScroll() {
     // full scan 60 times a second forever, pegging the main thread and
     // making the whole app — mouse included — appear to freeze.
     const RESCAN_INTERVAL_MS = 400;
+    // On top of that throttle: if a page genuinely has nothing scrollable
+    // in that direction (e.g. no horizontally-scrollable content anywhere
+    // on a Settings page), a stuck axis would otherwise keep retrying that
+    // scan forever — a much smaller ongoing cost than before, but still
+    // nonzero, still forever. Give up entirely after a few misses instead,
+    // converging to zero cost, until the stick is seen back at center.
+    const MAX_MISSES = 3;
 
     let cachedVTarget: HTMLElement | null = null;
     let cachedHTarget: HTMLElement | null = null;
     let lastVScanAt = 0;
     let lastHScanAt = 0;
+    let vMisses = 0;
+    let hMisses = 0;
 
     const isVScrollable = (el: Element): el is HTMLElement => {
       if (!(el instanceof HTMLElement) || !el.isConnected) return false;
@@ -68,28 +77,39 @@ export function useRightStickScroll() {
       const now = Date.now();
 
       const rawY = state.axes[3] ?? 0;
-      if (Math.abs(rawY) > DEADZONE) {
+      if (Math.abs(rawY) <= DEADZONE) {
+        vMisses = 0;
+      } else {
         const delta = scale(rawY);
-        if (!cachedVTarget || !isVScrollable(cachedVTarget)) {
+        if ((!cachedVTarget || !isVScrollable(cachedVTarget)) && vMisses < MAX_MISSES) {
           if (now - lastVScanAt > RESCAN_INTERVAL_MS) {
-            cachedVTarget = scanForTarget(isVScrollable);
             lastVScanAt = now;
+            const found = scanForTarget(isVScrollable);
+            if (found) cachedVTarget = found;
+            else { cachedVTarget = null; vMisses++; }
           } else {
             cachedVTarget = null;
           }
         }
+        // .main-content is a cheap, always-present fallback (a single
+        // class-selector query, not the expensive full-DOM scan above),
+        // so scrolling keeps working smoothly even once vMisses caps out.
         const target = cachedVTarget ?? (document.querySelector('.main-content') as HTMLElement | null);
         if (target) target.scrollTop += delta;
         else window.scrollBy(0, delta);
       }
 
       const rawX = state.axes[2] ?? 0;
-      if (Math.abs(rawX) > DEADZONE) {
+      if (Math.abs(rawX) <= DEADZONE) {
+        hMisses = 0;
+      } else if (hMisses < MAX_MISSES) {
         const delta = scale(rawX);
         if (!cachedHTarget || !isHScrollable(cachedHTarget)) {
           if (now - lastHScanAt > RESCAN_INTERVAL_MS) {
-            cachedHTarget = scanForTarget(isHScrollable);
             lastHScanAt = now;
+            const found = scanForTarget(isHScrollable);
+            if (found) cachedHTarget = found;
+            else { cachedHTarget = null; hMisses++; }
           } else {
             cachedHTarget = null;
           }
