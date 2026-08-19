@@ -25,8 +25,8 @@ const ACTIONS: { key: keyof GamepadMapping; label: string; note?: string }[] = [
   { key: 'rt',            label: 'RT — Page Right', note: 'main menus only' },
   { key: 'score',         label: 'Select/View — See Score', note: 'active quizzes only' },
   { key: 'pause',         label: 'Start — Pause', note: 'active quizzes only' },
-  { key: 'ls',            label: 'LS — Expand Media', note: 'not yet functional' },
-  { key: 'rs',            label: 'RS — Expand References', note: 'not yet functional' },
+  { key: 'ls',            label: 'LS — Expand Media', note: 'active quizzes, media panel open' },
+  { key: 'rs',            label: 'RS — Expand References', note: 'active quizzes, refs panel open' },
 ];
 
 const TAB_LABELS: Record<SettingsSubTab, string> = {
