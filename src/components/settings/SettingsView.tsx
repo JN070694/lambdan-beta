@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { exit } from '@tauri-apps/plugin-process';
@@ -68,6 +68,20 @@ export default function SettingsView() {
   const [livePressed, setLivePressed] = useState<number | null>(null);
   const [showQuitAppConfirm, setShowQuitAppConfirm] = useState(false);
   const [testModeActive, setTestModeActive] = useState(false);
+  const [aboutCopied, setAboutCopied] = useState(false);
+  const aboutCardRef = useRef<HTMLDivElement | null>(null);
+
+  const handleCopyAbout = useCallback(async () => {
+    const text = aboutCardRef.current?.innerText ?? '';
+    try {
+      await navigator.clipboard.writeText(text);
+      setAboutCopied(true);
+      setTimeout(() => setAboutCopied(false), 1500);
+    } catch {
+      // clipboard write failed (e.g. no permission) — button just won't
+      // flip to "Copied", no crash either way
+    }
+  }, []);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -466,8 +480,16 @@ export default function SettingsView() {
 
       {tab === 'about' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div className="section-label">How to Use</div>
-          <div className="card" data-stick-scroll style={{ maxHeight: 520, overflowY: 'auto', fontSize: 13, lineHeight: 1.7 }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            borderBottom: '1px solid var(--grey-300)', paddingBottom: 6, marginBottom: -2,
+          }}>
+            <span className="section-label" style={{ border: 'none', margin: 0, padding: 0 }}>How to Use</span>
+            <button className="btn btn-secondary btn-sm" onClick={handleCopyAbout}>
+              {aboutCopied ? '✓ Copied' : 'Copy'}
+            </button>
+          </div>
+          <div ref={aboutCardRef} className="card" data-stick-scroll style={{ maxHeight: 520, overflowY: 'auto', fontSize: 13, lineHeight: 1.7 }}>
             <p style={{ marginBottom: 10 }}>
               <strong>LAMBDAn</strong> is an offline quiz app. Import question packs, take quizzes,
               and track your results — all stored locally with no internet required.
