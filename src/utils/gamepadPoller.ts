@@ -123,7 +123,7 @@ class GamepadPoller {
       const axisMagnitude = gp.axes.reduce((max, a) => Math.max(max, Math.abs(a)), 0);
       if (axisMagnitude > 0.2 && gp.timestamp === this.lastTimestamp) {
         if (this.stuckSince === null) this.stuckSince = Date.now();
-        if (Date.now() - this.stuckSince > 1500) {
+        if (Date.now() - this.stuckSince > 800) {
           this.forceDisconnected();
           return;
         }
