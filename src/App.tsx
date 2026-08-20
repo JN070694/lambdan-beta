@@ -11,12 +11,14 @@ import HistoryView from '@/components/history/HistoryView';
 import SettingsView from '@/components/settings/SettingsView';
 import { useRightStickScroll } from '@/utils/useRightStickScroll';
 import { useAutoScale } from '@/utils/useAutoScale';
+import { useTheme } from '@/utils/useTheme';
 
 export default function App() {
   const { setFolders, setQuizzes, setHistory, setSettings, setGamepadMapping, session, settings } = useStore();
 
   useRightStickScroll();
   useAutoScale(settings.displayScale);
+  useTheme(settings.theme);
 
   useEffect(() => {
     Promise.all([
