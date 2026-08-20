@@ -80,15 +80,15 @@ export default function QuizEndScreen({ onRetakeQuiz }: { onRetakeQuiz?: () => v
         <div style={{ fontWeight: 600, fontSize: 16 }}>{quiz.title}</div>
         <div style={{ display: 'flex', gap: 32, fontFamily: 'var(--font-mono)', fontSize: 13 }}>
           <div>
-            <div style={{ color: '#888', fontSize: 11, marginBottom: 2 }}>Score</div>
+            <div style={{ color: 'var(--grey-500)', fontSize: 11, marginBottom: 2 }}>Score</div>
             <div style={{ fontSize: 28, fontWeight: 700 }}>{entry.percentage}%</div>
           </div>
           <div>
-            <div style={{ color: '#888', fontSize: 11, marginBottom: 2 }}>Correct</div>
+            <div style={{ color: 'var(--grey-500)', fontSize: 11, marginBottom: 2 }}>Correct</div>
             <div style={{ fontSize: 20, fontWeight: 700 }}>{entry.score} / {entry.total}</div>
           </div>
           <div>
-            <div style={{ color: '#888', fontSize: 11, marginBottom: 2 }}>Time</div>
+            <div style={{ color: 'var(--grey-500)', fontSize: 11, marginBottom: 2 }}>Time</div>
             <div style={{ fontSize: 20, fontWeight: 700 }}>{formatTime(entry.timeSeconds)}</div>
           </div>
         </div>
@@ -101,7 +101,7 @@ export default function QuizEndScreen({ onRetakeQuiz }: { onRetakeQuiz?: () => v
             {entry.questionResults.filter(r => !r.correct).map(r => (
               <div key={r.questionId} className="card-muted" style={{ fontSize: 13 }}>
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>{r.questionText}</div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#888' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-500)' }}>
                   Your answer: {r.userAnswer || '—'} · Correct: {r.correctAnswer}
                 </div>
               </div>
@@ -116,7 +116,7 @@ export default function QuizEndScreen({ onRetakeQuiz }: { onRetakeQuiz?: () => v
             key={label}
             className={i === 0 ? 'btn btn-primary' : 'btn btn-secondary'}
             onClick={() => handleSelect(i)}
-            style={focusIdx === i ? { outline: '2px solid #000', outlineOffset: 2 } : undefined}>
+            style={focusIdx === i ? { outline: '2px solid var(--black)', outlineOffset: 2 } : undefined}>
             {label}
           </button>
         ))}
