@@ -77,7 +77,7 @@ export default function RetakeView() {
       {showLegend && <GamepadLegend items={legendItems} />}
       <div className="pull-tab-bar">
         <button className="pull-tab" onClick={toggleMedia}>◀ MEDIA</button>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#aaa', padding: '0 16px', alignSelf: 'center' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-500)', padding: '0 16px', alignSelf: 'center' }}>
           RETAKE — not saved to history
         </span>
         <button className="pull-tab" onClick={toggleRefs}>REFS ▶</button>
