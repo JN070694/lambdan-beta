@@ -19,9 +19,9 @@ export default function QuizHistoryPeek({ quiz, onClose }: Props) {
   return (
     <Modal title={`${quiz.title} — Last 5 Scores`} onClose={onClose}>
       {entries === null ? (
-        <div style={{ fontSize: 13, color: '#888', textAlign: 'center', padding: '12px 0' }}>Loading…</div>
+        <div style={{ fontSize: 13, color: 'var(--grey-500)', textAlign: 'center', padding: '12px 0' }}>Loading…</div>
       ) : entries.length === 0 ? (
-        <div style={{ fontSize: 13, color: '#888', textAlign: 'center', padding: '12px 0' }}>
+        <div style={{ fontSize: 13, color: 'var(--grey-500)', textAlign: 'center', padding: '12px 0' }}>
           No attempts yet for this quiz.
         </div>
       ) : (
@@ -31,10 +31,10 @@ export default function QuizHistoryPeek({ quiz, onClose }: Props) {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}>
               <div>
-                <div style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: '#888' }}>
+                <div style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--grey-500)' }}>
                   {new Date(e.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
-                <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: '#aaa', marginTop: 2 }}>
+                <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--grey-500)', marginTop: 2 }}>
                   {formatTime(e.timeSeconds)}
                 </div>
               </div>
