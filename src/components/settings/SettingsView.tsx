@@ -46,6 +46,13 @@ const DISPLAY_SCALE_HELP: Record<AppSettings['displayScale'], string> = {
 
 const DISPLAY_SCALE_ORDER: AppSettings['displayScale'][] = ['auto', 'compact', 'comfortable', 'large'];
 
+const THEME_HELP: Record<AppSettings['theme'], string> = {
+  default: 'Clean black-on-white — the original look.',
+  'ultra-luxe': 'Black background, pearl text and borders, pewter-gold accents.',
+};
+
+const THEME_ORDER: AppSettings['theme'][] = ['default', 'ultra-luxe'];
+
 function TriggerIcon({ side, label }: { side: 'left' | 'right'; label: string }) {
   const flip = side === 'right';
   return (
@@ -164,7 +171,7 @@ export default function SettingsView() {
   };
 
   const onNavigateSubTab = useCallback((t: SettingsSubTab) => setTab(t), []);
-  const itemCountForTab = tab === 'quiz' ? 4 : tab === 'display' ? 2 : 0;
+  const itemCountForTab = tab === 'quiz' ? 4 : tab === 'display' ? 3 : 0;
 
   const onConfirm = useCallback(() => {
     if (tab === 'quiz') {
@@ -190,6 +197,10 @@ export default function SettingsView() {
       if (focusedIndex === 1) {
         const idx = DISPLAY_SCALE_ORDER.indexOf(settings.displayScale);
         saveSettings({ ...settings, displayScale: DISPLAY_SCALE_ORDER[(idx + 1) % DISPLAY_SCALE_ORDER.length] });
+      }
+      if (focusedIndex === 2) {
+        const idx = THEME_ORDER.indexOf(settings.theme);
+        saveSettings({ ...settings, theme: THEME_ORDER[(idx + 1) % THEME_ORDER.length] });
       }
     }
   }, [tab, focusedIndex, settings]);
@@ -466,13 +477,38 @@ export default function SettingsView() {
               onChange={(e) => saveSettings({ ...settings, displayScale: e.target.value as AppSettings['displayScale'] })}
               style={{
                 fontFamily: 'var(--font-mono)', fontSize: 13, padding: '8px 12px',
-                border: '1.5px solid #000', borderRadius: 6, background: '#fff', color: '#000',
+                border: '1.5px solid var(--black)', borderRadius: 6,
+                background: 'var(--white)', color: 'var(--black)',
                 cursor: 'pointer', flexShrink: 0,
               }}>
               <option value="auto">Auto (recommended)</option>
               <option value="compact">Compact — small / tablet screens</option>
               <option value="comfortable">Comfortable — laptop / desktop</option>
               <option value="large">Large — TV / distance viewing</option>
+            </select>
+          </div>
+
+          <div className="section-label" style={{ marginTop: 8 }}>Theme</div>
+
+          <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            outline: focusedIndex === 2 ? '2px solid #000' : 'none', outlineOffset: 2 }}>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>Theme</div>
+              <div style={{ fontSize: 12, color: '#888', marginTop: 3, maxWidth: 380 }}>
+                {THEME_HELP[settings.theme]}
+              </div>
+            </div>
+            <select
+              value={settings.theme}
+              onChange={(e) => saveSettings({ ...settings, theme: e.target.value as AppSettings['theme'] })}
+              style={{
+                fontFamily: 'var(--font-mono)', fontSize: 13, padding: '8px 12px',
+                border: '1.5px solid var(--black)', borderRadius: 6,
+                background: 'var(--white)', color: 'var(--black)',
+                cursor: 'pointer', flexShrink: 0,
+              }}>
+              <option value="default">Default White</option>
+              <option value="ultra-luxe">Ultra-Luxe</option>
             </select>
           </div>
         </div>
