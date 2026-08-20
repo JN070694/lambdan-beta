@@ -231,23 +231,23 @@ export default function QuizView() {
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px',
             fontFamily: 'var(--font-mono)', fontSize: 11 }}>
-            <span style={{ color: '#888' }}>{formatTime(elapsed)}</span>
-            <span style={{ background: '#fff', color: '#000', borderRadius: 4, padding: '2px 8px', fontWeight: 700 }}>
+            <span style={{ color: 'var(--grey-500)' }}>{formatTime(elapsed)}</span>
+            <span style={{ background: 'var(--white)', color: 'var(--black)', borderRadius: 4, padding: '2px 8px', fontWeight: 700 }}>
               UNTIL CORRECT
             </span>
             <button onClick={() => setShowScore(v => !v)}
-              style={{ background: 'none', border: '1px solid #555', borderRadius: 4, cursor: 'pointer',
-                color: '#ccc', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+              style={{ background: 'none', border: '1px solid var(--grey-600)', borderRadius: 4, cursor: 'pointer',
+                color: 'var(--grey-400)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
               {showScore ? `${masteredCount} / ${totalUnique} mastered` : 'Score'}
             </button>
             <button onClick={() => setPaused(!paused)}
-              style={{ background: 'none', border: '1px solid #fff', borderRadius: 4, cursor: 'pointer',
-                color: '#fff', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+              style={{ background: 'none', border: '1px solid var(--white)', borderRadius: 4, cursor: 'pointer',
+                color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
               ■ Pause
             </button>
             <button onClick={() => setShowQuitConfirm(true)}
-              style={{ background: 'none', border: '1px solid #888', borderRadius: 4, cursor: 'pointer',
-                color: '#aaa', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+              style={{ background: 'none', border: '1px solid var(--grey-500)', borderRadius: 4, cursor: 'pointer',
+                color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
               ← Quit
             </button>
           </div>
@@ -260,7 +260,7 @@ export default function QuizView() {
           {mediaOpen && <div className="quiz-side-pane open"><MediaOverlay /></div>}
           <div className="quiz-question-pane">
             <div style={{ padding: '24px 20px' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#888', marginBottom: 10 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-500)', marginBottom: 10 }}>
                 {masteredCount} / {totalUnique} mastered · {queue.length} remaining in queue
               </div>
               {currentQ && (
@@ -319,20 +319,20 @@ export default function QuizView() {
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px',
           fontFamily: 'var(--font-mono)', fontSize: 11 }}>
-          <span style={{ color: '#888' }}>{formatTime(elapsed)}</span>
+          <span style={{ color: 'var(--grey-500)' }}>{formatTime(elapsed)}</span>
           <button onClick={() => setShowScore(v => !v)}
-            style={{ background: 'none', border: '1px solid #555', borderRadius: 4, cursor: 'pointer',
-              color: '#ccc', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+            style={{ background: 'none', border: '1px solid var(--grey-600)', borderRadius: 4, cursor: 'pointer',
+              color: 'var(--grey-400)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
             {showScore ? `${correctCount} / ${answeredCount}` : 'Score'}
           </button>
           <button onClick={() => setPaused(!paused)}
-            style={{ background: 'none', border: '1px solid #fff', borderRadius: 4, cursor: 'pointer',
-              color: '#fff', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+            style={{ background: 'none', border: '1px solid var(--white)', borderRadius: 4, cursor: 'pointer',
+              color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
             ■ Pause
           </button>
           <button onClick={() => setShowQuitConfirm(true)}
-            style={{ background: 'none', border: '1px solid #888', borderRadius: 4, cursor: 'pointer',
-              color: '#aaa', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+            style={{ background: 'none', border: '1px solid var(--grey-500)', borderRadius: 4, cursor: 'pointer',
+              color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
             ← Quit
           </button>
         </div>
@@ -386,21 +386,21 @@ function PauseOverlay({ title, sub, onResume, onQuit, focusIndex }: {
   title: string; sub: string; onResume: () => void; onQuit: () => void; focusIndex: number;
 }) {
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(255,255,255,0.97)',
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(var(--white-rgb), 0.97)',
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       justifyContent: 'center', gap: 16, zIndex: 300 }}>
       <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700 }}>Paused</div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: '#888' }}>{title} · {sub}</div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#aaa' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--grey-500)' }}>{title} · {sub}</div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-500)' }}>
         ◀ ▶ to select · A to confirm · B to resume
       </div>
       <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
         <button className="btn btn-primary" onClick={onResume}
-          style={focusIndex === 0 ? { outline: '3px solid #000', outlineOffset: 2 } : undefined}>
+          style={focusIndex === 0 ? { outline: '3px solid var(--black)', outlineOffset: 2 } : undefined}>
           Resume
         </button>
         <button className="btn btn-secondary" onClick={onQuit}
-          style={focusIndex === 1 ? { outline: '3px solid #000', outlineOffset: 2 } : undefined}>
+          style={focusIndex === 1 ? { outline: '3px solid var(--black)', outlineOffset: 2 } : undefined}>
           Quit
         </button>
       </div>
@@ -418,15 +418,15 @@ function UntilCorrectEndScreen({ quizTitle, attempts, elapsed, quiz }: {
     <div style={{ maxWidth: 480, margin: '60px auto', textAlign: 'center',
       display: 'flex', flexDirection: 'column', gap: 18 }}>
       <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em',
-        textTransform: 'uppercase', color: '#888' }}>
+        textTransform: 'uppercase', color: 'var(--grey-500)' }}>
         Until Correct — Complete
       </div>
       <h1 style={{ fontSize: 22, fontWeight: 700 }}>{quizTitle}</h1>
-      <p style={{ fontSize: 14, color: '#666' }}>
+      <p style={{ fontSize: 14, color: 'var(--grey-600)' }}>
         You've answered every question correctly after {attempts} total {attempts === 1 ? 'attempt' : 'attempts'},
         in {formatTime(elapsed)}.
       </p>
-      <p style={{ fontSize: 12, color: '#999', fontFamily: 'var(--font-mono)' }}>
+      <p style={{ fontSize: 12, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)' }}>
         This attempt was not saved to history.
       </p>
       <button className="btn btn-primary" style={{ alignSelf: 'center', marginTop: 8 }}
