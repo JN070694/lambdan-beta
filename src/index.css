@@ -19,6 +19,25 @@
   --transition: 0.15s ease;
 }
 
+/* Ultra-Luxe — black + pearl, with pewter-gold standing in for the
+   greyscale mid-tones. Every rule in this file consistently reads colors
+   through these eight variables rather than hardcoding hex values, so
+   redefining them here is enough to re-theme the entire shared UI (cards,
+   buttons, tabs, toggles, tables, modals, overlays, badges) with no other
+   rule changes needed. --black/--white keep their names but swap which
+   end of the contrast scale they represent, so every existing rule that
+   references them inverts correctly without being rewritten. */
+[data-theme="ultra-luxe"] {
+  --black: #E7E2D4;
+  --white: #0a0a0b;
+  --grey-100: #1c1a16;
+  --grey-200: #262319;
+  --grey-300: #3a3428;
+  --grey-400: #5c5240;
+  --grey-500: #9c8a5e;
+  --grey-600: #cbb679;
+}
+
 html, body, #root { height: 100%; background: var(--white); color: var(--black); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; }
 
 ::-webkit-scrollbar { width: 6px; }
