@@ -10,7 +10,7 @@ function CenterTitle() {
   if (session.quiz && !session.finished) {
     return (
       <div className="topbar-center">
-        <span style={{ color: '#999', fontWeight: 400 }}>{session.currentIndex + 1} / {session.questions.length} · </span>
+        <span style={{ color: 'var(--grey-500)', fontWeight: 400 }}>{session.currentIndex + 1} / {session.questions.length} · </span>
         {session.quiz.title}
       </div>
     );
@@ -66,7 +66,7 @@ export default function TopBar() {
             onClick={() => goRelative(-1)}
             title="LT — previous page"
             style={{
-              background: '#000', color: '#fff', border: 'none', borderRadius: 4,
+              background: 'var(--black)', color: 'var(--white)', border: 'none', borderRadius: 4,
               fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
               padding: '3px 7px', cursor: 'pointer', flexShrink: 0,
             }}>
@@ -83,7 +83,7 @@ export default function TopBar() {
             onClick={() => goRelative(1)}
             title="RT — next page"
             style={{
-              background: '#000', color: '#fff', border: 'none', borderRadius: 4,
+              background: 'var(--black)', color: 'var(--white)', border: 'none', borderRadius: 4,
               fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
               padding: '3px 7px', cursor: 'pointer', flexShrink: 0,
             }}>
