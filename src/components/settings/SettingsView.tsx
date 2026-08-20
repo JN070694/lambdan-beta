@@ -58,9 +58,9 @@ function TriggerIcon({ side, label }: { side: 'left' | 'right'; label: string })
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
       <svg width="28" height="22" viewBox="0 0 28 22" style={{ transform: flip ? 'scaleX(-1)' : undefined }}>
-        <path d="M4 6 C8 2 16 1 24 3 L24 17 C16 19 8 18 4 14 Z" fill="#000"/>
+        <path d="M4 6 C8 2 16 1 24 3 L24 17 C16 19 8 18 4 14 Z" fill="var(--black)"/>
       </svg>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, color: '#000' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, color: 'var(--black)' }}>{label}</span>
     </div>
   );
 }
@@ -248,15 +248,15 @@ export default function SettingsView() {
 
           <div className="card" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            outline: focusedIndex === 0 ? '2px solid #000' : 'none', outlineOffset: 2,
+            outline: focusedIndex === 0 ? '2px solid var(--black)' : 'none', outlineOffset: 2,
             opacity: settings.untilCorrectMode ? 0.45 : 1,
             pointerEvents: settings.untilCorrectMode ? 'none' : 'auto',
           }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: 14 }}>Instant Feedback</div>
-              <div style={{ fontSize: 12, color: '#888', marginTop: 3 }}>
+              <div style={{ fontSize: 12, color: 'var(--grey-500)', marginTop: 3 }}>
                 Show correct / incorrect immediately after each answer
-                {settings.untilCorrectMode && <span style={{ color: '#aaa' }}> — locked by Until Correct</span>}
+                {settings.untilCorrectMode && <span style={{ color: 'var(--grey-500)' }}> — locked by Until Correct</span>}
               </div>
             </div>
             <button className={`toggle ${settings.instantFeedback ? 'on' : 'off'}`}
@@ -268,15 +268,15 @@ export default function SettingsView() {
 
           <div className="card" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            outline: focusedIndex === 1 ? '2px solid #000' : 'none', outlineOffset: 2,
+            outline: focusedIndex === 1 ? '2px solid var(--black)' : 'none', outlineOffset: 2,
             opacity: settings.untilCorrectMode ? 0.45 : 1,
             pointerEvents: settings.untilCorrectMode ? 'none' : 'auto',
           }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: 14 }}>Shuffle Questions</div>
-              <div style={{ fontSize: 12, color: '#888', marginTop: 3 }}>
+              <div style={{ fontSize: 12, color: 'var(--grey-500)', marginTop: 3 }}>
                 Randomise question order each time you start a quiz
-                {settings.untilCorrectMode && <span style={{ color: '#aaa' }}> — locked by Until Correct</span>}
+                {settings.untilCorrectMode && <span style={{ color: 'var(--grey-500)' }}> — locked by Until Correct</span>}
               </div>
             </div>
             <button className={`toggle ${settings.shuffleQuestions ? 'on' : 'off'}`}
@@ -288,11 +288,11 @@ export default function SettingsView() {
 
           <div className="card" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            outline: focusedIndex === 2 ? '2px solid #000' : 'none', outlineOffset: 2,
+            outline: focusedIndex === 2 ? '2px solid var(--black)' : 'none', outlineOffset: 2,
           }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: 14 }}>Shuffle Answers</div>
-              <div style={{ fontSize: 12, color: '#888', marginTop: 3 }}>
+              <div style={{ fontSize: 12, color: 'var(--grey-500)', marginTop: 3 }}>
                 Randomise multiple-choice answer order for each question
               </div>
             </div>
@@ -305,16 +305,16 @@ export default function SettingsView() {
 
           <div className="card" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: settings.untilCorrectMode ? '#1a1a1a' : '#f4f4f4',
-            borderColor: '#000',
-            outline: focusedIndex === 3 ? '2px solid #000' : 'none', outlineOffset: 2,
+            background: settings.untilCorrectMode ? 'var(--black)' : 'var(--grey-100)',
+            borderColor: 'var(--black)',
+            outline: focusedIndex === 3 ? '2px solid var(--black)' : 'none', outlineOffset: 2,
             transition: 'background 0.15s ease',
           }}>
             <div>
-              <div style={{ fontWeight: 600, fontSize: 14, color: settings.untilCorrectMode ? '#fff' : '#000' }}>
+              <div style={{ fontWeight: 600, fontSize: 14, color: settings.untilCorrectMode ? 'var(--white)' : 'var(--black)' }}>
                 "Until Correct" Mode
               </div>
-              <div style={{ fontSize: 12, marginTop: 3, color: settings.untilCorrectMode ? '#bbb' : '#666' }}>
+              <div style={{ fontSize: 12, marginTop: 3, color: settings.untilCorrectMode ? 'var(--grey-400)' : 'var(--grey-600)' }}>
                 Repeats each question until you answer it correctly. Forces Instant Feedback and
                 Shuffle Questions on. Attempts are not saved to history.
               </div>
@@ -343,13 +343,13 @@ export default function SettingsView() {
               opacity: testModeActive ? 0.35 : 1, pointerEvents: testModeActive ? 'none' : 'auto',
               transition: 'opacity 0.15s ease' }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
-                background: navigator.getGamepads().some(g => g) ? '#000' : '#ccc',
-                border: '1.5px solid #999' }} />
+                background: navigator.getGamepads().some(g => g) ? 'var(--black)' : 'var(--grey-400)',
+                border: '1.5px solid var(--grey-500)' }} />
               <div>
                 <div style={{ fontWeight: 600, fontSize: 13 }}>
                   {navigator.getGamepads().some(g => g) ? 'Gamepad Connected' : 'No Gamepad Detected'}
                 </div>
-                <div style={{ fontSize: 11, color: '#888', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
+                <div style={{ fontSize: 11, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
                   {navigator.getGamepads().some(g => g) ? 'Ready to use' : 'Connect via USB or Bluetooth'}
                 </div>
               </div>
@@ -358,7 +358,7 @@ export default function SettingsView() {
               <button className={`btn btn-sm ${testModeActive ? '' : 'btn-primary'}`}
                 onClick={() => setTestModeActive(v => !v)}
                 disabled={remapAllActive}
-                style={testModeActive ? { background: '#000', color: '#fff', border: '1px solid #000' } : undefined}>
+                style={testModeActive ? { background: 'var(--black)', color: 'var(--white)', border: '1px solid var(--black)' } : undefined}>
                 {testModeActive ? 'End Test' : 'Test Controller'}
               </button>
               <div style={{ display: 'flex', gap: 8,
@@ -377,12 +377,12 @@ export default function SettingsView() {
           </div>
 
           {remapAllActive && (
-            <div className="card" style={{ background: '#000', color: '#fff', textAlign: 'center', padding: 20 }}>
+            <div className="card" style={{ background: 'var(--black)', color: 'var(--white)', textAlign: 'center', padding: 20 }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, marginBottom: 8 }}>Press button for:</div>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, marginBottom: 8 }}>
                 {ACTIONS[remapWizardIndex]?.label ?? 'Done'}
               </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#888' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-500)' }}>
                 {remapWizardIndex + 1} / {ACTIONS.length}
               </div>
               <button className="btn btn-secondary" style={{ marginTop: 16 }}
@@ -401,21 +401,21 @@ export default function SettingsView() {
                   <div key={action.key} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '8px 12px', borderRadius: 6,
-                    background: pressed ? '#000' : '#f9f9f9',
-                    border: `1px solid ${pressed ? '#000' : '#e5e5e5'}`,
+                    background: pressed ? 'var(--black)' : 'var(--grey-100)',
+                    border: `1px solid ${pressed ? 'var(--black)' : 'var(--grey-300)'}`,
                     transition: 'background 0.1s ease',
                   }}>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: pressed ? '#fff' : '#000' }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: pressed ? 'var(--white)' : 'var(--black)' }}>
                         {action.label}
                       </div>
                       {action.note && (
                         <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)',
-                          color: pressed ? '#ccc' : '#999' }}>{action.note}</div>
+                          color: pressed ? 'var(--grey-400)' : 'var(--grey-500)' }}>{action.note}</div>
                       )}
                     </div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
-                      color: pressed ? '#fff' : '#666' }}>
+                      color: pressed ? 'var(--white)' : 'var(--grey-600)' }}>
                       {`Button ${displayNumber}`}
                     </div>
                   </div>
@@ -431,10 +431,10 @@ export default function SettingsView() {
           <div className="section-label">Appearance</div>
 
           <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            outline: focusedIndex === 0 ? '2px solid #000' : 'none', outlineOffset: 2 }}>
+            outline: focusedIndex === 0 ? '2px solid var(--black)' : 'none', outlineOffset: 2 }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: 14 }}>Controller Button Icons</div>
-              <div style={{ fontSize: 12, color: '#888', marginTop: 3 }}>
+              <div style={{ fontSize: 12, color: 'var(--grey-500)', marginTop: 3 }}>
                 Choose how button labels are displayed — Xbox style (A/B/X/Y) or PlayStation style (✕/○/□/△).
                 Purely visual, does not affect controls.
               </div>
@@ -442,7 +442,7 @@ export default function SettingsView() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
               <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)',
                 fontWeight: settings.buttonIconStyle === 'xbox' ? 700 : 400,
-                color: settings.buttonIconStyle === 'xbox' ? '#000' : '#aaa' }}>
+                color: settings.buttonIconStyle === 'xbox' ? 'var(--black)' : 'var(--grey-500)' }}>
                 Xbox
               </span>
               <button
@@ -456,7 +456,7 @@ export default function SettingsView() {
               </button>
               <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)',
                 fontWeight: settings.buttonIconStyle === 'playstation' ? 700 : 400,
-                color: settings.buttonIconStyle === 'playstation' ? '#000' : '#aaa' }}>
+                color: settings.buttonIconStyle === 'playstation' ? 'var(--black)' : 'var(--grey-500)' }}>
                 PlayStation
               </span>
             </div>
@@ -465,10 +465,10 @@ export default function SettingsView() {
           <div className="section-label" style={{ marginTop: 8 }}>Display Size</div>
 
           <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            outline: focusedIndex === 1 ? '2px solid #000' : 'none', outlineOffset: 2 }}>
+            outline: focusedIndex === 1 ? '2px solid var(--black)' : 'none', outlineOffset: 2 }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: 14 }}>Display Size</div>
-              <div style={{ fontSize: 12, color: '#888', marginTop: 3, maxWidth: 380 }}>
+              <div style={{ fontSize: 12, color: 'var(--grey-500)', marginTop: 3, maxWidth: 380 }}>
                 {DISPLAY_SCALE_HELP[settings.displayScale]}
               </div>
             </div>
@@ -491,10 +491,10 @@ export default function SettingsView() {
           <div className="section-label" style={{ marginTop: 8 }}>Theme</div>
 
           <div className="card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            outline: focusedIndex === 2 ? '2px solid #000' : 'none', outlineOffset: 2 }}>
+            outline: focusedIndex === 2 ? '2px solid var(--black)' : 'none', outlineOffset: 2 }}>
             <div>
               <div style={{ fontWeight: 600, fontSize: 14 }}>Theme</div>
-              <div style={{ fontSize: 12, color: '#888', marginTop: 3, maxWidth: 380 }}>
+              <div style={{ fontSize: 12, color: 'var(--grey-500)', marginTop: 3, maxWidth: 380 }}>
                 {THEME_HELP[settings.theme]}
               </div>
             </div>
@@ -522,7 +522,7 @@ export default function SettingsView() {
           }}>
             <span className="section-label" style={{ border: 'none', margin: 0, padding: 0 }}>How to Use</span>
             <button className="btn btn-secondary btn-sm" onClick={handleCopyAbout}
-              style={{ background: '#000', color: '#fff', border: '1px solid #000' }}>
+              style={{ background: 'var(--black)', color: 'var(--white)', border: '1px solid var(--black)' }}>
               {aboutCopied ? '✓ Copied' : 'Copy'}
             </button>
           </div>
@@ -545,7 +545,7 @@ export default function SettingsView() {
             <p style={{ marginBottom: 6 }}>
               Inside your .tar.gz, place a <strong>media</strong> folder alongside your CSVs:
             </p>
-            <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
+            <pre style={{ background: 'var(--grey-100)', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
 {`pack.tar.gz
 ├── Quiz1.csv
@@ -564,7 +564,7 @@ export default function SettingsView() {
             <p style={{ marginBottom: 6 }}>
               Each row has 11 comma-separated fields:
             </p>
-            <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
+            <pre style={{ background: 'var(--grey-100)', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
 {`[1] Q#  [2] Question text  [3] A  [4] B  [5] C  [6] D  [7] E  [8] Answer  [9] Explanation  [10] Group  [11] nid`}
             </pre>
@@ -579,7 +579,7 @@ export default function SettingsView() {
 
             <p style={{ fontWeight: 600, marginBottom: 4, marginTop: 8 }}>Multiple Choice</p>
             <p style={{ marginBottom: 6 }}>Fill in options A–E (at least A and B). Set field 8 to the correct letter.</p>
-            <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
+            <pre style={{ background: 'var(--grey-100)', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
 {`1,What is 2+2?,One,Two,Three,Four,,D,2 + 2 counts four total units.,Math,`}
             </pre>
@@ -589,7 +589,7 @@ export default function SettingsView() {
               Set field 3 to <code>True</code>, field 4 to <code>False</code>, leave C–E empty.
               Set field 8 to <code>A</code> (true) or <code>B</code> (false).
             </p>
-            <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
+            <pre style={{ background: 'var(--grey-100)', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
 {`2,The sky is blue.,True,False,,,,A,Rayleigh scattering makes short blue wavelengths visible.,Science,`}
             </pre>
@@ -599,7 +599,7 @@ export default function SettingsView() {
               Leave all option fields (A–E) empty. Put the model answer in field 8.
               The app will show a "Show Answer" prompt — you then mark yourself correct or incorrect.
             </p>
-            <pre style={{ background: '#f5f5f5', padding: '8px 10px', borderRadius: 6,
+            <pre style={{ background: 'var(--grey-100)', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
 {`3,Explain supply and demand.,,,,,,The law of supply and demand describes how price and quantity interact in a market.,,Economics,`}
             </pre>
@@ -626,8 +626,8 @@ export default function SettingsView() {
               ['License', 'AGPL-3.0'],
             ].map(([k, v]) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between',
-                alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: 8 }}>
-                <span style={{ fontSize: 13, color: '#666' }}>{k}</span>
+                alignItems: 'center', borderBottom: '1px solid var(--grey-200)', paddingBottom: 8 }}>
+                <span style={{ fontSize: 13, color: 'var(--grey-600)' }}>{k}</span>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600 }}>{v}</span>
               </div>
             ))}
