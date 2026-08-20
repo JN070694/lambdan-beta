@@ -3,6 +3,7 @@
 :root {
   --black: #000000;
   --white: #ffffff;
+  --white-rgb: 255, 255, 255;
   --grey-100: #f9f9f9;
   --grey-200: #f0f0f0;
   --grey-300: #e0e0e0;
@@ -30,6 +31,7 @@
 [data-theme="ultra-luxe"] {
   --black: #E7E2D4;
   --white: #0a0a0b;
+  --white-rgb: 10, 10, 11;
   --grey-100: #1c1a16;
   --grey-200: #262319;
   --grey-300: #3a3428;
