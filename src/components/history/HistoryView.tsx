@@ -126,7 +126,7 @@ export default function HistoryView() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ fontSize: 11, color: '#888', fontFamily: 'var(--font-mono)', textAlign: 'right', marginBottom: 4 }}>
+          <div style={{ fontSize: 11, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', textAlign: 'right', marginBottom: 4 }}>
             Showing last 5 per quiz · most recent first · A retake · X details · Y delete (confirm)
           </div>
           {entries.map((entry, i) => (
@@ -153,13 +153,13 @@ export default function HistoryView() {
             {detailEntry.questionResults.map(r => (
               <div key={r.questionId} style={{
                 fontSize: 12, padding: '8px 10px', borderRadius: 6,
-                background: r.correct ? '#f5f5f5' : '#fafafa',
-                border: `1px solid ${r.correct ? '#ddd' : '#000'}`,
+                background: r.correct ? 'var(--grey-100)' : 'var(--grey-100)',
+                border: `1px solid ${r.correct ? 'var(--grey-300)' : 'var(--black)'}`,
               }}>
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>
                   {r.correct ? '✓' : '✗'} {r.questionText}
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#888' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-500)' }}>
                   Your answer: {r.userAnswer || '—'} · Correct: {r.correctAnswer}
                 </div>
               </div>
@@ -203,13 +203,13 @@ function HistoryCard({ entry, focused, isStale, onRetake, onExport, onDetails, o
 
   return (
     <div className="card" style={{ overflow: 'hidden', padding: 0,
-      outline: focused ? '2px solid #000' : 'none', outlineOffset: 2 }}>
+      outline: focused ? '2px solid var(--black)' : 'none', outlineOffset: 2 }}>
       <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 14 }}>
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 600, fontSize: 14 }}>{entry.quizTitle}</div>
-          <div style={{ fontSize: 11, color: '#888', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
+          <div style={{ fontSize: 11, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
             {date} · {entry.total} questions
-            {isStale && <span style={{ color: '#aaa' }}> · quiz has since been updated</span>}
+            {isStale && <span style={{ color: 'var(--grey-500)' }}> · quiz has since been updated</span>}
           </div>
         </div>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700 }}>{entry.percentage}%</div>
@@ -228,10 +228,10 @@ function HistoryCard({ entry, focused, isStale, onRetake, onExport, onDetails, o
           <button className="btn btn-secondary btn-sm" onClick={onDelete}>✕</button>
         </div>
       </div>
-      <div style={{ background: '#f9f9f9', borderTop: '1px solid #e0e0e0', padding: '8px 16px', display: 'flex', gap: 24 }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#444' }}>✓ {entry.score} correct</span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#444' }}>✗ {missed} missed</span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#888' }}>{formatTime(entry.timeSeconds)}</span>
+      <div style={{ background: 'var(--grey-100)', borderTop: '1px solid var(--grey-300)', padding: '8px 16px', display: 'flex', gap: 24 }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-600)' }}>✓ {entry.score} correct</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-600)' }}>✗ {missed} missed</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-500)' }}>{formatTime(entry.timeSeconds)}</span>
       </div>
     </div>
   );
