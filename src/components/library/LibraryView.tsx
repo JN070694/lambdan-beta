@@ -267,8 +267,8 @@ export default function LibraryView() {
       </div>
 
       {error && (
-        <div style={{ border: '1.5px solid #000', borderRadius: 8, padding: '10px 14px',
-          marginBottom: 16, fontFamily: 'var(--font-mono)', fontSize: 12, background: '#fafafa',
+        <div style={{ border: '1.5px solid var(--black)', borderRadius: 8, padding: '10px 14px',
+          marginBottom: 16, fontFamily: 'var(--font-mono)', fontSize: 12, background: 'var(--grey-100)',
           whiteSpace: 'pre-wrap' }}>
           <strong>Import failed:</strong> {error}
         </div>
@@ -390,7 +390,7 @@ export default function LibraryView() {
             onChange={e => setNewFolderName(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleCreateFolder()}
             placeholder="Folder name…"
-            style={{ width: '100%', border: '1.5px solid #000', borderRadius: 6,
+            style={{ width: '100%', border: '1.5px solid var(--black)', borderRadius: 6,
               padding: '8px 12px', fontSize: 14, marginBottom: 16, outline: 'none' }}
           />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
@@ -407,7 +407,7 @@ export default function LibraryView() {
             value={renameValue}
             onChange={e => setRenameValue(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleRenameFolder()}
-            style={{ width: '100%', border: '1.5px solid #000', borderRadius: 6,
+            style={{ width: '100%', border: '1.5px solid var(--black)', borderRadius: 6,
               padding: '8px 12px', fontSize: 14, marginBottom: 16, outline: 'none' }}
           />
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
@@ -427,17 +427,17 @@ function FolderCard({ folder, focused, onOpen, onRename, onDelete, onDrop }: {
   const [dropTarget, setDropTarget] = useState(false);
   return (
     <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer',
-      outline: focused ? '2px solid #000' : (dropTarget ? '2px solid #000' : 'none'), outlineOffset: 2 }}
+      outline: focused ? '2px solid var(--black)' : (dropTarget ? '2px solid var(--black)' : 'none'), outlineOffset: 2 }}
       onClick={onOpen}
       onDragOver={e => { e.preventDefault(); setDropTarget(true); }}
       onDragLeave={() => setDropTarget(false)}
       onDrop={e => { e.preventDefault(); setDropTarget(false); onDrop(); }}>
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M2 5.5A1.5 1.5 0 013.5 4h4.086a1.5 1.5 0 011.06.44l.915.914A1.5 1.5 0 0010.621 6H16.5A1.5 1.5 0 0118 7.5v7A1.5 1.5 0 0116.5 16h-13A1.5 1.5 0 012 14.5v-9z" fill="#000"/>
+        <path d="M2 5.5A1.5 1.5 0 013.5 4h4.086a1.5 1.5 0 011.06.44l.915.914A1.5 1.5 0 0010.621 6H16.5A1.5 1.5 0 0118 7.5v7A1.5 1.5 0 0116.5 16h-13A1.5 1.5 0 012 14.5v-9z" fill="var(--black)"/>
       </svg>
       <div style={{ flex: 1 }}>
         <div style={{ fontWeight: 600, fontSize: 14 }}>{folder.name}</div>
-        <div style={{ fontSize: 11, color: '#888', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
+        <div style={{ fontSize: 11, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
           {folder.quizCount} {folder.quizCount === 1 ? 'quiz' : 'quizzes'}
         </div>
       </div>
@@ -461,12 +461,12 @@ function QuizCard({ quiz, focused, onTake, onHistory, onDelete, onDragStart, onD
       onDragStart={() => { setDragging(true); onDragStart(); }}
       onDragEnd={() => { setDragging(false); onDragEnd(); }}
       style={{ display: 'flex', alignItems: 'center', gap: 16, opacity: dragging ? 0.4 : 1,
-        outline: focused ? '2px solid #000' : 'none', outlineOffset: 2 }}>
+        outline: focused ? '2px solid var(--black)' : 'none', outlineOffset: 2 }}>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {quiz.title}
         </div>
-        <div style={{ fontSize: 11, color: '#888', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
+        <div style={{ fontSize: 11, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', marginTop: 2 }}>
           {quiz.questionCount} questions · {date}
         </div>
       </div>
