@@ -82,6 +82,7 @@ export interface AppSettings {
   buttonIconStyle: 'xbox' | 'playstation';
   shuffleAnswers: boolean;
   displayScale: 'auto' | 'compact' | 'comfortable' | 'large';
+  theme: 'default' | 'ultra-luxe';
 }
 
 export interface GamepadMapping {
