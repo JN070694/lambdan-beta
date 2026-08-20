@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { invoke, convertFileSrc } from '@tauri-apps/api/core';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { gamepadPoller } from '@/utils/gamepadPoller';
-import type { Question, Quiz, GamepadMapping } from '@/types';
+import { useTheme } from '@/utils/useTheme';
+import type { AppSettings, Question, Quiz, GamepadMapping } from '@/types';
 
 interface ImageItem {
   path: string;
@@ -28,6 +29,8 @@ export default function ExpandedViewer() {
   const [idx, setIdx] = useState(initialIndex);
   const [loading, setLoading] = useState(true);
   const [backButton, setBackButton] = useState(1); // sensible default (standard "B") until fetched
+  const [theme, setTheme] = useState<AppSettings['theme']>('default');
+  useTheme(theme);
   const lenRef = useRef(0);
   lenRef.current = images.length;
 
@@ -36,6 +39,11 @@ export default function ExpandedViewer() {
       try {
         const mapping = await invoke<GamepadMapping>('get_gamepad_mapping');
         setBackButton(mapping.back);
+      } catch { /* keep default */ }
+
+      try {
+        const s = await invoke<AppSettings>('get_settings');
+        setTheme(s.theme);
       } catch { /* keep default */ }
 
       try {
@@ -90,9 +98,9 @@ export default function ExpandedViewer() {
   const src = current ? convertFileSrc(current.path) : null;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', background: '#fff' }}>
+    <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', background: 'var(--white)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 16px', borderBottom: '1.5px solid #000', fontFamily: 'var(--font-mono)',
+        padding: '10px 16px', borderBottom: '1.5px solid var(--black)', fontFamily: 'var(--font-mono)',
         fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', flexShrink: 0 }}>
         <span>{type === 'media' ? 'MEDIA (EXPANDED)' : 'REFS (EXPANDED)'}</span>
         <button className="btn btn-secondary btn-sm" onClick={() => getCurrentWindow().close()}>
@@ -100,28 +108,28 @@ export default function ExpandedViewer() {
         </button>
       </div>
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: '#f5f5f5', overflow: 'hidden', minHeight: 0 }}>
+        background: 'var(--grey-100)', overflow: 'hidden', minHeight: 0 }}>
         {loading ? (
-          <span style={{ color: '#999', fontFamily: 'var(--font-mono)', fontSize: 13 }}>Loading…</span>
+          <span style={{ color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', fontSize: 13 }}>Loading…</span>
         ) : src ? (
           <img src={src} alt={current?.label ?? ''}
             style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
         ) : (
-          <span style={{ color: '#999', fontFamily: 'var(--font-mono)', fontSize: 13 }}>No image found</span>
+          <span style={{ color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', fontSize: 13 }}>No image found</span>
         )}
       </div>
       {images.length > 1 && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32,
-          padding: 16, borderTop: '1.5px solid #000', flexShrink: 0 }}>
+          padding: 16, borderTop: '1.5px solid var(--black)', flexShrink: 0 }}>
           <button className="diamond-btn" disabled={idx === 0} onClick={() => setIdx(i => i - 1)} aria-label="Previous image">
-            <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="8,0 0,5 8,10" fill="#fff"/></svg>
+            <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="8,0 0,5 8,10" fill="var(--white)"/></svg>
           </button>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, textAlign: 'center' }}>
             {current?.label ?? '—'}<br/>
-            <span style={{ fontSize: 10, color: '#888' }}>{idx + 1} / {images.length}</span>
+            <span style={{ fontSize: 10, color: 'var(--grey-500)' }}>{idx + 1} / {images.length}</span>
           </span>
           <button className="diamond-btn" disabled={idx === images.length - 1} onClick={() => setIdx(i => i + 1)} aria-label="Next image">
-            <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 10,5 2,10" fill="#fff"/></svg>
+            <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 10,5 2,10" fill="var(--white)"/></svg>
           </button>
         </div>
       )}
