@@ -22,19 +22,19 @@ export default function MediaOverlay() {
       <div className="overlay-body">
         <div className="overlay-image">
           {src ? <img src={src} alt={`nid image ${variantLabel(current)}`} />
-               : <span style={{ color: '#999', fontFamily: 'var(--font-mono)', fontSize: 13 }}>No image found</span>}
+               : <span style={{ color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', fontSize: 13 }}>No image found</span>}
         </div>
         {variants.length > 1 && (
           <div className="overlay-nav">
             <button className="diamond-btn" disabled={idx === 0} onClick={() => setMediaVariant(idx - 1)} aria-label="Previous image">
-              <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="8,0 0,5 8,10" fill="#fff"/></svg>
+              <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="8,0 0,5 8,10" fill="var(--white)"/></svg>
             </button>
             <span className="overlay-label">
               {current ? variantLabel(current) : '—'}<br/>
-              <span style={{ fontSize: 10, color: '#888' }}>{idx + 1} / {variants.length}</span>
+              <span style={{ fontSize: 10, color: 'var(--grey-500)' }}>{idx + 1} / {variants.length}</span>
             </span>
             <button className="diamond-btn" disabled={idx === variants.length - 1} onClick={() => setMediaVariant(idx + 1)} aria-label="Next image">
-              <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 10,5 2,10" fill="#fff"/></svg>
+              <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 10,5 2,10" fill="var(--white)"/></svg>
             </button>
           </div>
         )}
