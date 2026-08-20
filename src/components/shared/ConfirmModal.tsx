@@ -62,7 +62,7 @@ export default function ConfirmModal({
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-title">{title}</div>
         <div style={{ fontSize: 14, marginBottom: 16 }}>{message}</div>
-        <div style={{ fontSize: 11, color: '#aaa', fontFamily: 'var(--font-mono)', marginBottom: 14 }}>
+        <div style={{ fontSize: 11, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', marginBottom: 14 }}>
           ◀ ▶ to select · A to confirm · B to cancel
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
@@ -70,13 +70,13 @@ export default function ConfirmModal({
             className="btn btn-primary"
             autoFocus
             onClick={onCancel}
-            style={focus === 0 ? { outline: '2px solid #000', outlineOffset: 2 } : undefined}>
+            style={focus === 0 ? { outline: '2px solid var(--black)', outlineOffset: 2 } : undefined}>
             {cancelLabel}
           </button>
           <button
             className="btn btn-secondary"
             onClick={onConfirm}
-            style={focus === 1 ? { outline: '2px solid #000', outlineOffset: 2 } : undefined}>
+            style={focus === 1 ? { outline: '2px solid var(--black)', outlineOffset: 2 } : undefined}>
             {confirmLabel}
           </button>
         </div>
