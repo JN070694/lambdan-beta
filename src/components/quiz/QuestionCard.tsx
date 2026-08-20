@@ -46,13 +46,13 @@ export default function QuestionCard({
                 <button
                   className="btn btn-primary"
                   onClick={() => onAnswer('CORRECT')}
-                  style={optionFocusIndex === 0 ? { outline: '2px solid #000', outlineOffset: 2 } : undefined}>
+                  style={optionFocusIndex === 0 ? { outline: '2px solid var(--black)', outlineOffset: 2 } : undefined}>
                   ✓ Correct
                 </button>
                 <button
                   className="btn btn-secondary"
                   onClick={() => onAnswer('INCORRECT')}
-                  style={optionFocusIndex === 1 ? { outline: '2px solid #000', outlineOffset: 2 } : undefined}>
+                  style={optionFocusIndex === 1 ? { outline: '2px solid var(--black)', outlineOffset: 2 } : undefined}>
                   ✗ Incorrect
                 </button>
               </div>
@@ -87,7 +87,7 @@ export default function QuestionCard({
               className={cls}
               disabled={answered}
               onClick={() => !answered && onAnswer(opt.label)}
-              style={focused ? { outline: '2px solid #000', outlineOffset: 2 } : undefined}
+              style={focused ? { outline: '2px solid var(--black)', outlineOffset: 2 } : undefined}
             >
               <span className="opt-label">{opt.label}</span>
               <span>{opt.text}</span>
@@ -113,7 +113,7 @@ function ExplanationBox({ text }: { text: string }) {
   return (
     <div className="card-muted" style={{ fontSize: 13, lineHeight: 1.6 }}>
       <div style={{ fontWeight: 700, fontSize: 11, letterSpacing: 0.5, textTransform: 'uppercase',
-        color: '#888', marginBottom: 4 }}>
+        color: 'var(--grey-500)', marginBottom: 4 }}>
         Explanation
       </div>
       <div style={{ whiteSpace: 'pre-wrap' }}>{text}</div>
@@ -129,7 +129,7 @@ function MediaIndicator({ nid, count, onOpen }: { nid: string; count: number; on
       <div style={{ fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-mono)', marginTop: 4 }}>
         media available
       </div>
-      <div style={{ fontSize: 11, color: '#888', fontFamily: 'var(--font-mono)' }}>
+      <div style={{ fontSize: 11, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)' }}>
         {nid} · {count} {count === 1 ? 'image' : 'images'} — click to open
       </div>
     </div>
@@ -144,12 +144,12 @@ function MetaRow({ question, typeLabels, answered, onAnswer }: {
 }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#888' }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--grey-500)' }}>
         #{question.questionNumber}
       </span>
       {question.nid && (
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700,
-          background: '#f0f0f0', padding: '2px 8px', borderRadius: 4, border: '1px solid #ccc' }}>
+          background: 'var(--grey-200)', padding: '2px 8px', borderRadius: 4, border: '1px solid var(--grey-400)' }}>
           {question.nid}
         </span>
       )}
@@ -162,7 +162,7 @@ function MetaRow({ question, typeLabels, answered, onAnswer }: {
             onClick={() => onAnswer('SKIP_CORRECT')}
             title="Skip and mark correct"
             style={{
-              background: '#fff', border: '1.5px solid #000', borderRadius: 5,
+              background: 'var(--white)', border: '1.5px solid var(--black)', borderRadius: 5,
               padding: '3px 10px', fontSize: 11, fontFamily: 'var(--font-mono)',
               cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: 600,
             }}>
@@ -172,9 +172,9 @@ function MetaRow({ question, typeLabels, answered, onAnswer }: {
             onClick={() => onAnswer('SKIP_INCORRECT')}
             title="Skip and mark incorrect"
             style={{
-              background: '#fff', border: '1.5px solid #ccc', borderRadius: 5,
+              background: 'var(--white)', border: '1.5px solid var(--grey-400)', borderRadius: 5,
               padding: '3px 10px', fontSize: 11, fontFamily: 'var(--font-mono)',
-              cursor: 'pointer', whiteSpace: 'nowrap', color: '#666',
+              cursor: 'pointer', whiteSpace: 'nowrap', color: 'var(--grey-600)',
             }}>
             ✗ Skip
           </button>
