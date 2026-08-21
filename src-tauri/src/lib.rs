@@ -38,6 +38,7 @@ pub fn run() {
             commands::quiz::get_history,
             commands::quiz::get_history_entry,
             commands::quiz::delete_history_entry,
+            commands::quiz::clear_all_history,
             commands::quiz::get_settings,
             commands::quiz::save_settings,
             commands::quiz::get_gamepad_mapping,
