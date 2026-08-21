@@ -187,7 +187,7 @@ function MetaRow({ question, typeLabels, answered, onAnswer }: {
 function NextRow({ answer, isLast, onNext, onFinish, essay }: {
   answer: string; isLast: boolean; onNext: () => void; onFinish: () => void; essay?: boolean;
 }) {
-  const correct = essay ? answer === 'CORRECT' : undefined;
+  const correct = essay ? (answer === 'CORRECT' || answer === 'SKIP_CORRECT') : undefined;
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
       {essay && (
