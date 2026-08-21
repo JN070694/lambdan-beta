@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useStore } from '@/store';
+import type { ShuffledQuestion } from '@/types';
 import { gamepadPoller } from './gamepadPoller';
 import { openExpandedViewer } from './expandWindow';
 
@@ -29,6 +30,15 @@ interface UseQuizGamepadOptions {
   optionFocusIndex: number;
   setOptionFocusIndex: (i: number) => void;
   optionCount: number;
+  /** The question actually on screen right now. Passed in rather than derived from
+   * session.questions[session.currentIndex], because Until Correct mode advances
+   * through its own local queue and never moves session.currentIndex — deriving it
+   * internally would silently freeze the gamepad on the first question in that mode. */
+  currentQuestion: ShuffledQuestion | null;
+  /** Records an answer for a question. In Until Correct mode this must route through
+   * the mode's own bookkeeping (mastered set, attempt count) rather than writing to
+   * the session store directly, or gamepad-driven answers won't be tracked. */
+  onAnswer: (questionId: string, value: string) => void;
   onSelectFocused: () => void;
   onAdvance: () => void;
   onToggleScore?: () => void;
@@ -56,7 +66,7 @@ export function useQuizGamepad(opts: UseQuizGamepadOptions) {
       if (!session.quiz || session.finished) return;
 
       const m = gamepadMapping;
-      const q = session.questions[session.currentIndex];
+      const q = opts.currentQuestion;
 
       // Pause toggles regardless of other state
       if (justPressed(m.pause)) {
@@ -185,8 +195,8 @@ export function useQuizGamepad(opts: UseQuizGamepadOptions) {
             store.setShowAnswer(true);
             opts.setOptionFocusIndex(0); // default to Correct
           } else {
-            if (opts.optionFocusIndex === 0) store.setAnswer(q.id, 'CORRECT');
-            else store.setAnswer(q.id, 'INCORRECT');
+            if (opts.optionFocusIndex === 0) opts.onAnswer(q.id, 'CORRECT');
+            else opts.onAnswer(q.id, 'INCORRECT');
           }
         } else {
           opts.onSelectFocused();
@@ -197,19 +207,19 @@ export function useQuizGamepad(opts: UseQuizGamepadOptions) {
       if (q.questionType === 'ESSAY' && !answered) {
         if (justPressed(m.skipCorrect)) {
           if (!session.showAnswer) store.setShowAnswer(true);
-          store.setAnswer(q.id, 'CORRECT');
+          opts.onAnswer(q.id, 'CORRECT');
         }
         if (justPressed(m.skipIncorrect)) {
           if (!session.showAnswer) store.setShowAnswer(true);
-          store.setAnswer(q.id, 'INCORRECT');
+          opts.onAnswer(q.id, 'INCORRECT');
         }
       } else if (q.questionType !== 'ESSAY' && !answered) {
-        if (justPressed(m.skipCorrect)) store.setAnswer(q.id, 'SKIP_CORRECT');
-        if (justPressed(m.skipIncorrect)) store.setAnswer(q.id, 'SKIP_INCORRECT');
+        if (justPressed(m.skipCorrect)) opts.onAnswer(q.id, 'SKIP_CORRECT');
+        if (justPressed(m.skipIncorrect)) opts.onAnswer(q.id, 'SKIP_INCORRECT');
       }
     });
   }, [
-    opts.optionFocusIndex, opts.optionCount,
+    opts.optionFocusIndex, opts.optionCount, opts.currentQuestion, opts.onAnswer,
     opts.onSelectFocused, opts.onAdvance, opts.onToggleScore,
     opts.onResume, opts.onQuitRequest, opts.pauseMenuIndex, opts.setPauseMenuIndex,
     opts.suppressed,
