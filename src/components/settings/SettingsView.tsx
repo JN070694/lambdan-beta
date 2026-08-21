@@ -563,7 +563,7 @@ export default function SettingsView() {
 {`[1] Q#  [2] Question text  [3] A  [4] B  [5] C  [6] D  [7] E  [8] Answer  [9] Explanation  [10] Group  [11] nid`}
             </pre>
 
-            <div style={{ background: '#fff8e1', border: '1px solid #e8d38a', borderRadius: 6,
+            <div style={{ background: 'var(--grey-200)', border: '1px solid var(--grey-400)', borderRadius: 6,
               padding: '8px 10px', marginBottom: 14, fontSize: 12, lineHeight: 1.6 }}>
               <strong>Note:</strong> field 8 (Answer) holds the correct option's letter (<code>A</code>–<code>E</code>)
               for Multiple Choice and True/False questions — for True/False, that means <code>A</code> for
