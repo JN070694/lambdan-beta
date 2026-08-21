@@ -39,7 +39,12 @@ export default function QuestionCard({
         ) : (
           <>
             <div className="card-muted" style={{ fontSize: 14, lineHeight: 1.6 }}>
-              {question.correctAnswer}
+              {question.correctAnswer.trim() ? question.correctAnswer : (
+                <span style={{ color: 'var(--grey-500)', fontStyle: 'italic' }}>
+                  No answer text was provided for this question — check that the Answer
+                  column (field 8) is filled in for this row in the source CSV.
+                </span>
+              )}
             </div>
             {!answered && (
               <div style={{ display: 'flex', gap: 8 }}>
@@ -172,9 +177,9 @@ function MetaRow({ question, typeLabels, answered, onAnswer }: {
             onClick={() => onAnswer('SKIP_INCORRECT')}
             title="Skip and mark incorrect"
             style={{
-              background: 'var(--white)', border: '1.5px solid var(--grey-400)', borderRadius: 5,
+              background: 'var(--white)', border: '1.5px solid var(--black)', borderRadius: 5,
               padding: '3px 10px', fontSize: 11, fontFamily: 'var(--font-mono)',
-              cursor: 'pointer', whiteSpace: 'nowrap', color: 'var(--grey-600)',
+              cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: 600,
             }}>
             ✗ Skip
           </button>
