@@ -19,7 +19,7 @@ export default function QuizView() {
   const store = useStore();
   const {
     session, startSession, setAnswer, next, finishSession,
-    clearSession, settings, toggleMedia, toggleRefs, setPaused,
+    clearSession, settings, toggleMedia, toggleRefs, closeMedia, closeRefs, setPaused,
   } = store;
   const { quiz, questions, currentIndex, answers, finished, paused, mediaOpen, refsOpen } = session;
   const backPath = (q: Quiz | null) => q?.folderId ? `/library/folder/${q.folderId}` : '/library';
@@ -185,6 +185,22 @@ export default function QuizView() {
     if (isLast) handleFinish();
     else next();
   }, [untilCorrect, handleUntilCorrectNext, currentIndex, questions.length, handleFinish, next]);
+
+  // Esc mirrors the B button: close an open overlay first, resume if paused,
+  // otherwise prompt to quit. If the quit-confirm dialog is already up,
+  // ConfirmModal handles Esc itself (cancels), so this is a no-op then.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (finished || showQuitConfirm) return;
+      if (mediaOpen) { closeMedia(); return; }
+      if (refsOpen) { closeRefs(); return; }
+      if (paused) { setPaused(false); setPauseMenuIndex(0); return; }
+      setShowQuitConfirm(true);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [finished, showQuitConfirm, mediaOpen, refsOpen, paused, closeMedia, closeRefs, setPaused]);
 
   useQuizGamepad({
     optionFocusIndex,
