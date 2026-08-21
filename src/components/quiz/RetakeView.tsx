@@ -57,6 +57,8 @@ export default function RetakeView() {
     optionFocusIndex,
     setOptionFocusIndex,
     optionCount: currentQ?.shuffledOptions.length ?? 0,
+    currentQuestion: currentQ ?? null,
+    onAnswer: setAnswer,
     onSelectFocused,
     onAdvance,
   });
