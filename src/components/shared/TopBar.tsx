@@ -66,7 +66,7 @@ export default function TopBar() {
             onClick={() => goRelative(-1)}
             title="LT — previous page"
             style={{
-              background: 'var(--black)', color: 'var(--white)', border: 'none', borderRadius: 4,
+              background: 'var(--inverse-bg)', color: 'var(--inverse-fg)', border: 'none', borderRadius: 4,
               fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
               padding: '3px 7px', cursor: 'pointer', flexShrink: 0,
             }}>
@@ -83,7 +83,7 @@ export default function TopBar() {
             onClick={() => goRelative(1)}
             title="RT — next page"
             style={{
-              background: 'var(--black)', color: 'var(--white)', border: 'none', borderRadius: 4,
+              background: 'var(--inverse-bg)', color: 'var(--inverse-fg)', border: 'none', borderRadius: 4,
               fontFamily: 'var(--font-mono)', fontSize: 10, fontWeight: 700,
               padding: '3px 7px', cursor: 'pointer', flexShrink: 0,
             }}>
