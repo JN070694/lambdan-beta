@@ -155,30 +155,35 @@ export default function HistoryView() {
         </div>
       )}
 
-      {detailEntry && (
-        <Modal title={`${detailEntry.quizTitle} — Details`} onClose={() => setDetailEntry(null)}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 360, overflowY: 'auto' }}>
-            <div style={{ display: 'flex', gap: 24, fontFamily: 'var(--font-mono)', fontSize: 13 }}>
-              <div>Score: <strong>{detailEntry.percentage}%</strong></div>
-              <div>Time: <strong>{formatTime(detailEntry.timeSeconds)}</strong></div>
-            </div>
-            {detailEntry.questionResults.map(r => (
-              <div key={r.questionId} style={{
-                fontSize: 12, padding: '8px 10px', borderRadius: 6,
-                background: r.correct ? 'var(--grey-100)' : 'var(--grey-100)',
-                border: `1px solid ${r.correct ? 'var(--grey-300)' : 'var(--black)'}`,
-              }}>
-                <div style={{ fontWeight: 600, marginBottom: 4 }}>
-                  {r.correct ? '✓' : '✗'} {r.questionNumber ? `${r.questionNumber}. ` : ''}{r.questionText}
-                </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-500)' }}>
-                  Your answer: {r.userAnswer || '—'} · Correct: {r.correctAnswer}
-                </div>
+      {detailEntry && (() => {
+        const missed = detailEntry.questionResults.filter(r => !r.correct);
+        return (
+          <Modal title={`${detailEntry.quizTitle} — Details`} onClose={() => setDetailEntry(null)}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxHeight: 360, overflowY: 'auto' }}>
+              <div style={{ display: 'flex', gap: 24, fontFamily: 'var(--font-mono)', fontSize: 13 }}>
+                <div>Score: <strong>{detailEntry.percentage}%</strong></div>
+                <div>Time: <strong>{formatTime(detailEntry.timeSeconds)}</strong></div>
               </div>
-            ))}
-          </div>
-        </Modal>
-      )}
+              {missed.length === 0 ? (
+                <div style={{ fontSize: 13, color: 'var(--grey-500)', padding: '4px 0' }}>
+                  Nothing missed — every question was answered correctly.
+                </div>
+              ) : (
+                missed.map(r => (
+                  <div key={r.questionId} style={{
+                    fontSize: 12, padding: '8px 10px', borderRadius: 6,
+                    background: 'var(--grey-100)', border: '1px solid var(--black)',
+                  }}>
+                    <div style={{ fontWeight: 600 }}>
+                      ✗ {r.questionNumber ? `${r.questionNumber}. ` : ''}{r.questionText}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </Modal>
+        );
+      })()}
 
       {confirmDeleteEntry && (
         <ConfirmModal
