@@ -119,8 +119,15 @@ html, body, #root { height: 100%; background: var(--white); color: var(--black);
 .btn-secondary { background: var(--white); color: var(--black); border: 1.5px solid var(--black); }
 .btn-sm { padding: 3px 12px; font-size: 11px; font-family: var(--font-mono); }
 
-/* Universal hover for all buttons not using .btn class */
-button { cursor: pointer; transition: opacity 0.15s ease; }
+/* Every <button> element gets an explicit UA-stylesheet text color that does
+   NOT inherit from its parent by default — unlike other elements. Any button
+   relying on inherited color (option-btn, diamond-btn, toggle, etc.) would
+   otherwise render with the browser's default button text color regardless
+   of theme, which is invisible on a dark theme's inverted surfaces. Setting
+   color: inherit here fixes every button, current and future, in one place;
+   classes like .btn-primary that set an explicit color are unaffected since
+   a class selector already outranks this element selector. */
+button { cursor: pointer; transition: opacity 0.15s ease; color: inherit; }
 button:hover:not(:disabled):not(.btn):not(.toggle):not(.option-btn):not(.diamond-btn) { opacity: 0.75; }
 button:disabled { cursor: not-allowed; }
 
