@@ -169,7 +169,7 @@ export default function HistoryView() {
                 border: `1px solid ${r.correct ? 'var(--grey-300)' : 'var(--black)'}`,
               }}>
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>
-                  {r.correct ? '✓' : '✗'} {r.questionText}
+                  {r.correct ? '✓' : '✗'} {r.questionNumber ? `${r.questionNumber}. ` : ''}{r.questionText}
                 </div>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-500)' }}>
                   Your answer: {r.userAnswer || '—'} · Correct: {r.correctAnswer}
