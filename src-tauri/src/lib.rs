@@ -2,6 +2,7 @@ mod commands;
 mod db;
 mod error;
 mod models;
+mod sleep_guard;
 
 use tauri::Manager;
 
@@ -22,6 +23,12 @@ pub fn run() {
                 .map_err(|e| Box::new(std::io::Error::new(
                     std::io::ErrorKind::Other, e.to_string()
                 )) as Box<dyn std::error::Error>)?;
+
+            // Held in managed state for the app's whole lifetime so the OS
+            // doesn't sleep/lock the screen out from under an active quiz;
+            // released automatically (dropped) when the app exits.
+            app.manage(sleep_guard::SleepGuard::start());
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
