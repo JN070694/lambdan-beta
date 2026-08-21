@@ -62,8 +62,8 @@ export default function GamepadLegend({ items, top }: Props) {
             opacity: inactive ? 0.4 : 1 }}>
             <div style={{
               width: 24, height: 24, borderRadius: '50%',
-              background: connected ? 'var(--black)' : 'var(--grey-400)',
-              color: 'var(--white)',
+              background: connected ? 'var(--inverse-bg)' : 'var(--grey-400)',
+              color: 'var(--inverse-fg)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: 'var(--font-mono)', fontSize: isPS ? 16 : 12, fontWeight: 700, flexShrink: 0,
               transition: 'background 0.3s ease',
