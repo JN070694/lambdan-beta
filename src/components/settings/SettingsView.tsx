@@ -472,20 +472,17 @@ export default function SettingsView() {
                 {DISPLAY_SCALE_HELP[settings.displayScale]}
               </div>
             </div>
-            <select
-              value={settings.displayScale}
-              onChange={(e) => saveSettings({ ...settings, displayScale: e.target.value as AppSettings['displayScale'] })}
-              style={{
-                fontFamily: 'var(--font-mono)', fontSize: 13, padding: '8px 12px',
-                border: '1.5px solid var(--black)', borderRadius: 6,
-                background: 'var(--white)', color: 'var(--black)',
-                cursor: 'pointer', flexShrink: 0,
-              }}>
-              <option value="auto">Auto (recommended)</option>
-              <option value="compact">Compact — small / tablet screens</option>
-              <option value="comfortable">Comfortable — laptop / desktop</option>
-              <option value="large">Large — TV / distance viewing</option>
-            </select>
+            <div className="select-wrapper">
+              <select
+                className="themed-select"
+                value={settings.displayScale}
+                onChange={(e) => saveSettings({ ...settings, displayScale: e.target.value as AppSettings['displayScale'] })}>
+                <option value="auto">Auto (recommended)</option>
+                <option value="compact">Compact — small / tablet screens</option>
+                <option value="comfortable">Comfortable — laptop / desktop</option>
+                <option value="large">Large — TV / distance viewing</option>
+              </select>
+            </div>
           </div>
 
           <div className="section-label" style={{ marginTop: 8 }}>Theme</div>
@@ -498,18 +495,15 @@ export default function SettingsView() {
                 {THEME_HELP[settings.theme]}
               </div>
             </div>
-            <select
-              value={settings.theme}
-              onChange={(e) => saveSettings({ ...settings, theme: e.target.value as AppSettings['theme'] })}
-              style={{
-                fontFamily: 'var(--font-mono)', fontSize: 13, padding: '8px 12px',
-                border: '1.5px solid var(--black)', borderRadius: 6,
-                background: 'var(--white)', color: 'var(--black)',
-                cursor: 'pointer', flexShrink: 0,
-              }}>
-              <option value="default">Default White</option>
-              <option value="ultra-luxe">Ultra-Luxe</option>
-            </select>
+            <div className="select-wrapper">
+              <select
+                className="themed-select"
+                value={settings.theme}
+                onChange={(e) => saveSettings({ ...settings, theme: e.target.value as AppSettings['theme'] })}>
+                <option value="default">Default White</option>
+                <option value="ultra-luxe">Ultra-Luxe</option>
+              </select>
+            </div>
           </div>
         </div>
       )}
