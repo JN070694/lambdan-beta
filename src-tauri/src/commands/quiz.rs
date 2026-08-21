@@ -177,6 +177,16 @@ pub async fn delete_history_entry(entry_id: String) -> std::result::Result<(), L
     Ok(())
 }
 
+#[tauri::command]
+pub async fn clear_all_history(quiz_id: Option<String>) -> std::result::Result<(), LambdanError> {
+    let conn = db::get().lock().unwrap();
+    match quiz_id {
+        Some(qid) => { conn.execute("DELETE FROM history WHERE quiz_id=?1", params![qid])?; }
+        None => { conn.execute("DELETE FROM history", [])?; }
+    }
+    Ok(())
+}
+
 // ── Settings ──────────────────────────────────────────────────────────────────
 
 #[tauri::command]
