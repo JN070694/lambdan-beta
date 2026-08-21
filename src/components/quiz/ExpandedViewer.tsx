@@ -122,14 +122,14 @@ export default function ExpandedViewer() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32,
           padding: 16, borderTop: '1.5px solid var(--black)', flexShrink: 0 }}>
           <button className="diamond-btn" disabled={idx === 0} onClick={() => setIdx(i => i - 1)} aria-label="Previous image">
-            <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="8,0 0,5 8,10" fill="var(--white)"/></svg>
+            <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="8,0 0,5 8,10" fill="var(--inverse-fg)"/></svg>
           </button>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, textAlign: 'center' }}>
             {current?.label ?? '—'}<br/>
             <span style={{ fontSize: 10, color: 'var(--grey-500)' }}>{idx + 1} / {images.length}</span>
           </span>
           <button className="diamond-btn" disabled={idx === images.length - 1} onClick={() => setIdx(i => i + 1)} aria-label="Next image">
-            <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 10,5 2,10" fill="var(--white)"/></svg>
+            <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 10,5 2,10" fill="var(--inverse-fg)"/></svg>
           </button>
         </div>
       )}
