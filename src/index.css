@@ -1,5 +1,38 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ============================================================
+   THEME IDENTITY — every color the app uses lives here.
+   To add a new theme: copy the [data-theme="..."] block below,
+   give it a new name, and fill in each slot. Every CSS rule in
+   this file reads colors through these variables — nothing else
+   needs to change to add a theme.
+
+   Roles:
+   --black / --white / --grey-100..600
+       The base palette. Most surfaces (page background, cards,
+       borders, muted text) read through these. They INVERT
+       between themes — e.g. --black is literal black in Default,
+       but becomes pearl in Ultra-Luxe — because most elements are
+       meant to flip their light/dark relationship with a themed
+       page (a white page & black card border becomes a black
+       page & pearl card border).
+
+   --inverse-bg / --inverse-fg / --inverse-border
+       For "chrome" elements meant to always read as a solid dark
+       bar regardless of theme (the top MEDIA/Pause/REFS strip,
+       table headers, the Λ logo mark, diamond nav buttons) — these
+       do NOT invert, so they don't flip into a jarring bright
+       block on a dark theme.
+
+   --toggle-on / --toggle-off / --toggle-knob
+       Dedicated toggle-switch colors. Kept separate from the base
+       palette so the knob is guaranteed to contrast against both
+       states, in every theme, without manual per-theme tuning.
+
+   --accent
+       The theme's signature color, used sparingly for a single
+       highlighted detail (currently just the active toggle track).
+   ============================================================ */
 :root {
   --black: #000000;
   --white: #ffffff;
@@ -10,6 +43,17 @@
   --grey-400: #cccccc;
   --grey-500: #999999;
   --grey-600: #666666;
+
+  --inverse-bg: #000000;
+  --inverse-fg: #ffffff;
+  --inverse-fg-muted: #999999;
+  --inverse-border: #000000;
+
+  --accent: #000000;
+  --toggle-on: #000000;
+  --toggle-off: #cccccc;
+  --toggle-knob: #ffffff;
+
   --font-sans: 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'Courier New', Courier, monospace;
   --font-serif: Georgia, 'Times New Roman', serif;
@@ -20,14 +64,9 @@
   --transition: 0.15s ease;
 }
 
-/* Ultra-Luxe — black + pearl, with pewter-gold standing in for the
-   greyscale mid-tones. Every rule in this file consistently reads colors
-   through these eight variables rather than hardcoding hex values, so
-   redefining them here is enough to re-theme the entire shared UI (cards,
-   buttons, tabs, toggles, tables, modals, overlays, badges) with no other
-   rule changes needed. --black/--white keep their names but swap which
-   end of the contrast scale they represent, so every existing rule that
-   references them inverts correctly without being rewritten. */
+/* Ultra-Luxe — black canvas, pearl ink and borders, pewter-gold
+   as the one accent. See the identity guide above for what each
+   slot controls. */
 [data-theme="ultra-luxe"] {
   --black: #E7E2D4;
   --white: #0a0a0b;
@@ -38,6 +77,16 @@
   --grey-400: #5c5240;
   --grey-500: #9c8a5e;
   --grey-600: #cbb679;
+
+  --inverse-bg: #16140f;
+  --inverse-fg: #E7E2D4;
+  --inverse-fg-muted: #9c8a5e;
+  --inverse-border: #3a3428;
+
+  --accent: #cbb679;
+  --toggle-on: #cbb679;
+  --toggle-off: #3a3428;
+  --toggle-knob: #E7E2D4;
 }
 
 html, body, #root { height: 100%; background: var(--white); color: var(--black); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; }
@@ -84,18 +133,42 @@ button:disabled { cursor: not-allowed; }
 .pill-muted { border-color: var(--grey-400); color: var(--grey-600); font-weight: 400; }
 
 .toggle { width: 44px; height: 24px; border-radius: 100px; position: relative; cursor: pointer; flex-shrink: 0; border: none; transition: background var(--transition), opacity var(--transition); }
+
+/* Themed select dropdown — appearance:none strips native OS rendering
+   (needed because some platforms, e.g. Linux/GTK, render a select's
+   closed box via the OS theme regardless of CSS color/background,
+   silently ignoring them). That also removes the built-in arrow icon,
+   so a custom one is drawn via ::after on the wrapper instead of a
+   background-image, since it needs to read var(--black) — a plain
+   image can't respond to the current theme, but a CSS border-triangle
+   can. Note: the *expanded* option list itself is rendered by the OS
+   on most platforms and generally can't be themed via CSS at all —
+   this covers the closed/collapsed box, which is the part visible
+   most of the time. */
+.select-wrapper { position: relative; display: inline-block; }
+.select-wrapper::after {
+  content: ''; position: absolute; right: 12px; top: 50%;
+  width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent;
+  border-top: 6px solid var(--black); transform: translateY(-25%); pointer-events: none;
+}
+select.themed-select {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  background: var(--white); color: var(--black); border: 1.5px solid var(--black);
+  border-radius: 6px; padding: 8px 32px 8px 12px; font-family: var(--font-mono);
+  font-size: 13px; cursor: pointer; width: 100%;
+}
 .toggle:hover { opacity: 0.8; }
-.toggle.on { background: var(--black); }
-.toggle.off { background: var(--grey-400); }
-.toggle-knob { width: 18px; height: 18px; background: var(--white); border-radius: 50%; position: absolute; top: 3px; transition: left var(--transition); }
+.toggle.on { background: var(--toggle-on); }
+.toggle.off { background: var(--toggle-off); }
+.toggle-knob { width: 18px; height: 18px; background: var(--toggle-knob); border-radius: 50%; position: absolute; top: 3px; transition: left var(--transition); }
 .toggle.on .toggle-knob { left: 23px; }
 .toggle.off .toggle-knob { left: 3px; }
 
 .draggable { cursor: grab; }
 .draggable:active { cursor: grabbing; }
 
-.pull-tab-bar { display: flex; justify-content: space-between; align-items: stretch; border-bottom: 1.5px solid var(--black); flex-shrink: 0; background: var(--black); }
-.pull-tab { background: var(--black); color: var(--white); font-size: 11px; font-family: var(--font-mono); letter-spacing: 0.12em; padding: 7px 20px; cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none; border: none; transition: opacity 0.15s ease; }
+.pull-tab-bar { display: flex; justify-content: space-between; align-items: stretch; border-bottom: 1.5px solid var(--inverse-border); flex-shrink: 0; background: var(--inverse-bg); }
+.pull-tab { background: var(--inverse-bg); color: var(--inverse-fg); font-size: 11px; font-family: var(--font-mono); letter-spacing: 0.12em; padding: 7px 20px; cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none; border: none; transition: opacity 0.15s ease; }
 .pull-tab:hover { opacity: 0.75; }
 
 .quiz-split-layout { display: flex; gap: 0; align-items: stretch; min-height: 0; }
@@ -110,7 +183,7 @@ button:disabled { cursor: not-allowed; }
 .overlay-image { flex: 1; display: flex; align-items: center; justify-content: center; background: var(--grey-100); overflow: hidden; min-height: 0; }
 .overlay-image img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .overlay-nav { display: flex; align-items: center; justify-content: center; gap: 32px; padding: 16px; border-top: 1.5px solid var(--black); flex-shrink: 0; }
-.diamond-btn { width: 32px; height: 32px; background: var(--black); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; transition: opacity 0.15s ease; }
+.diamond-btn { width: 32px; height: 32px; background: var(--inverse-bg); clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; transition: opacity 0.15s ease; }
 .diamond-btn:hover:not(:disabled) { opacity: 0.7; }
 .diamond-btn:disabled { opacity: 0.2; cursor: default; }
 .overlay-label { font-family: var(--font-mono); font-size: 12px; font-weight: 700; min-width: 80px; text-align: center; }
@@ -120,7 +193,7 @@ button:disabled { cursor: not-allowed; }
 .modal-title { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-500); margin-bottom: 16px; }
 
 .table { border: 1.5px solid var(--black); border-radius: var(--radius-lg); overflow: hidden; }
-.table-head { display: grid; background: var(--black); color: var(--white); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+.table-head { display: grid; background: var(--inverse-bg); color: var(--inverse-fg); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
 .table-head div, .table-row div { padding: 9px 14px; }
 .table-row { display: grid; border-top: 1px solid var(--grey-300); }
 .table-row:nth-child(odd) { background: var(--grey-100); }
@@ -132,8 +205,8 @@ button:disabled { cursor: not-allowed; }
 
 .media-indicator { border: 1.5px solid var(--black); border-radius: var(--radius-xl); padding: 14px 20px; background: var(--grey-100); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: background var(--transition); }
 .media-indicator:hover { background: var(--grey-200); }
-.lambda-pill { background: var(--black); border-radius: var(--radius-sm); width: 32px; height: 28px; display: flex; align-items: center; justify-content: center; }
-.lambda-pill span { font-family: var(--font-serif); font-size: 18px; color: var(--white); line-height: 1; }
+.lambda-pill { background: var(--inverse-bg); border-radius: var(--radius-sm); width: 32px; height: 28px; display: flex; align-items: center; justify-content: center; }
+.lambda-pill span { font-family: var(--font-serif); font-size: 18px; color: var(--inverse-fg); line-height: 1; }
 
 .option-btn { display: flex; align-items: center; gap: 12px; padding: 11px 15px; border-radius: var(--radius-lg); border: 1.5px solid var(--grey-400); background: var(--white); cursor: pointer; text-align: left; width: 100%; font-size: 14px; transition: border-color var(--transition), background var(--transition); }
 .option-btn:hover:not(:disabled) { border-color: var(--black); }
