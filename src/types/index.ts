@@ -58,6 +58,7 @@ export interface ShuffledQuestion extends Question {
 export interface QuestionResult {
   questionId: string;
   questionText: string;
+  questionNumber?: string;
   correct: boolean;
   userAnswer: string;
   correctAnswer: string;
