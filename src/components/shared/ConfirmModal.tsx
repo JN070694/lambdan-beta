@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useStore } from '@/store';
 import { gamepadPoller } from '@/utils/gamepadPoller';
 
@@ -13,17 +13,14 @@ interface Props {
 
 /**
  * Confirm modal with built-in gamepad support.
- * Left/Right D-pad or stick navigates between No (left, default) and Yes (right).
- * A = confirm focused button. B = cancel. Esc = cancel.
+ * Confirm sits on the left, Cancel on the right — and each maps straight to
+ * its own button (A = confirm, B = cancel, Esc = cancel) with no need to
+ * navigate/scroll between them first.
  */
 export default function ConfirmModal({
   title, message, onConfirm, onCancel,
   confirmLabel = 'Yes', cancelLabel = 'No',
 }: Props) {
-  const [focus, setFocus] = useState(0); // 0 = cancel (left/default), 1 = confirm (right)
-  const lastAxisDir = useRef(0);
-  const lastAxisTime = useRef(0);
-
   const onConfirmRef = useRef(onConfirm);
   const onCancelRef = useRef(onCancel);
   onConfirmRef.current = onConfirm;
@@ -39,26 +36,8 @@ export default function ConfirmModal({
     return gamepadPoller.subscribe(state => {
       if (!state.connected) return;
       const m = useStore.getState().gamepadMapping;
-      const { justPressed, axes } = state;
-      const axisX = axes[0] ?? 0;
-      const now = Date.now();
-
-      let dir = 0;
-      if (justPressed(14) || (axisX < -0.5 && lastAxisDir.current >= 0)) dir = -1;
-      else if (justPressed(15) || (axisX > 0.5 && lastAxisDir.current <= 0)) dir = 1;
-      if (dir !== 0 && now - lastAxisTime.current > 200) {
-        setFocus(f => Math.max(0, Math.min(1, f + dir)));
-        lastAxisTime.current = now;
-      }
-      lastAxisDir.current = Math.abs(axisX) > 0.5 ? (axisX < 0 ? -1 : 1) : 0;
-
-      if (justPressed(m.select)) {
-        setFocus(f => {
-          if (f === 1) onConfirmRef.current();
-          else onCancelRef.current();
-          return f;
-        });
-      }
+      const { justPressed } = state;
+      if (justPressed(m.select)) onConfirmRef.current();
       if (justPressed(m.back)) onCancelRef.current();
     });
   }, []);
@@ -69,21 +48,14 @@ export default function ConfirmModal({
         <div className="modal-title">{title}</div>
         <div style={{ fontSize: 14, marginBottom: 16 }}>{message}</div>
         <div style={{ fontSize: 11, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', marginBottom: 14 }}>
-          ◀ ▶ to select · A to confirm · B to cancel
+          A to confirm · B to cancel
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-          <button
-            className="btn btn-primary"
-            autoFocus
-            onClick={onCancel}
-            style={focus === 0 ? { outline: '2px solid var(--black)', outlineOffset: 2 } : undefined}>
-            {cancelLabel}
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={onConfirm}
-            style={focus === 1 ? { outline: '2px solid var(--black)', outlineOffset: 2 } : undefined}>
+        <div style={{ display: 'flex', justifyContent: 'flex-start', gap: 8 }}>
+          <button className="btn btn-secondary" autoFocus onClick={onConfirm}>
             {confirmLabel}
+          </button>
+          <button className="btn btn-primary" onClick={onCancel}>
+            {cancelLabel}
           </button>
         </div>
       </div>
