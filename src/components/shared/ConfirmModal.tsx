@@ -14,7 +14,7 @@ interface Props {
 /**
  * Confirm modal with built-in gamepad support.
  * Left/Right D-pad or stick navigates between No (left, default) and Yes (right).
- * A = confirm focused button. B = cancel.
+ * A = confirm focused button. B = cancel. Esc = cancel.
  */
 export default function ConfirmModal({
   title, message, onConfirm, onCancel,
@@ -28,6 +28,12 @@ export default function ConfirmModal({
   const onCancelRef = useRef(onCancel);
   onConfirmRef.current = onConfirm;
   onCancelRef.current = onCancel;
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onCancelRef.current(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   useEffect(() => {
     return gamepadPoller.subscribe(state => {
