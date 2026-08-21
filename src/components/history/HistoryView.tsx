@@ -18,6 +18,7 @@ export default function HistoryView() {
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [detailEntry, setDetailEntry] = useState<HistoryEntry | null>(null);
   const [confirmDeleteEntry, setConfirmDeleteEntry] = useState<HistoryEntry | null>(null);
+  const [confirmClearAll, setConfirmClearAll] = useState(false);
   const [showQuitAppConfirm, setShowQuitAppConfirm] = useState(false);
   const [validQuestionIds, setValidQuestionIds] = useState<Record<string, Set<string>>>({});
 
@@ -76,6 +77,11 @@ export default function HistoryView() {
     setHistory(history.filter(h => h.id !== entryId));
   };
 
+  const handleClearAllHistory = async () => {
+    await invoke('clear_all_history', { quizId: null });
+    setHistory([]);
+  };
+
   const entries = filterQuizId ? history.filter(h => h.quizId === filterQuizId) : history;
 
   const onConfirm = useCallback(() => {
@@ -98,10 +104,11 @@ export default function HistoryView() {
 
   const onBack = useCallback(() => {
     if (confirmDeleteEntry) { setConfirmDeleteEntry(null); return; }
+    if (confirmClearAll) { setConfirmClearAll(false); return; }
     if (detailEntry) { setDetailEntry(null); return; }
     if (showQuitAppConfirm) { setShowQuitAppConfirm(false); return; }
     setShowQuitAppConfirm(true); // B on History root — prompt to quit the app
-  }, [confirmDeleteEntry, detailEntry, showQuitAppConfirm]);
+  }, [confirmDeleteEntry, confirmClearAll, detailEntry, showQuitAppConfirm]);
 
   useMenuGamepad({
     currentPage: 'history',
@@ -113,7 +120,7 @@ export default function HistoryView() {
     onSecondary,
     onTertiary,
     onBack,
-    enabled: !detailEntry && !confirmDeleteEntry && !showQuitAppConfirm,
+    enabled: !detailEntry && !confirmDeleteEntry && !confirmClearAll && !showQuitAppConfirm,
   });
 
   return (
@@ -126,8 +133,13 @@ export default function HistoryView() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ fontSize: 11, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', textAlign: 'right', marginBottom: 4 }}>
-            Showing last 5 per quiz · most recent first · A retake · X details · Y delete (confirm)
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12, marginBottom: 4 }}>
+            <div style={{ fontSize: 11, color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>
+              Showing last 5 per quiz · most recent first · A retake · X details · Y delete (confirm)
+            </div>
+            <button className="btn btn-secondary btn-sm" onClick={() => setConfirmClearAll(true)}>
+              Clear All History
+            </button>
           </div>
           {entries.map((entry, i) => (
             <HistoryCard key={entry.id} entry={entry} focused={i === focusedIndex}
@@ -175,6 +187,17 @@ export default function HistoryView() {
           onConfirm={async () => { await handleDeleteHistory(confirmDeleteEntry.id); setConfirmDeleteEntry(null); }}
           onCancel={() => setConfirmDeleteEntry(null)}
           confirmLabel="Yes, Delete"
+          cancelLabel="No"
+        />
+      )}
+
+      {confirmClearAll && (
+        <ConfirmModal
+          title="Clear All History"
+          message="Delete every history entry for every quiz? This cannot be undone."
+          onConfirm={async () => { await handleClearAllHistory(); setConfirmClearAll(false); }}
+          onCancel={() => setConfirmClearAll(false)}
+          confirmLabel="Yes, Clear All"
           cancelLabel="No"
         />
       )}
