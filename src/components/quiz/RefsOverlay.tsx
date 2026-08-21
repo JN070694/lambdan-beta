@@ -25,14 +25,14 @@ export default function RefsOverlay() {
         {refs.length > 1 && (
           <div className="overlay-nav">
             <button className="diamond-btn" disabled={idx === 0} onClick={() => setRefIndex(idx - 1)}>
-              <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="8,0 0,5 8,10" fill="var(--white)"/></svg>
+              <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="8,0 0,5 8,10" fill="var(--inverse-fg)"/></svg>
             </button>
             <span className="overlay-label">
               {current?.displayLabel ?? '—'}<br/>
               <span style={{ fontSize: 10, color: 'var(--grey-500)' }}>{idx + 1} / {refs.length}</span>
             </span>
             <button className="diamond-btn" disabled={idx === refs.length - 1} onClick={() => setRefIndex(idx + 1)}>
-              <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 10,5 2,10" fill="var(--white)"/></svg>
+              <svg width="10" height="10" viewBox="0 0 10 10"><polygon points="2,0 10,5 2,10" fill="var(--inverse-fg)"/></svg>
             </button>
           </div>
         )}
