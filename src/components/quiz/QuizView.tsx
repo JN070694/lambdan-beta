@@ -231,23 +231,23 @@ export default function QuizView() {
           </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px',
             fontFamily: 'var(--font-mono)', fontSize: 11 }}>
-            <span style={{ color: 'var(--grey-500)' }}>{formatTime(elapsed)}</span>
-            <span style={{ background: 'var(--white)', color: 'var(--black)', borderRadius: 4, padding: '2px 8px', fontWeight: 700 }}>
+            <span style={{ color: 'var(--inverse-fg-muted)' }}>{formatTime(elapsed)}</span>
+            <span style={{ background: 'var(--inverse-fg)', color: 'var(--inverse-bg)', borderRadius: 4, padding: '2px 8px', fontWeight: 700 }}>
               UNTIL CORRECT
             </span>
             <button onClick={() => setShowScore(v => !v)}
-              style={{ background: 'none', border: '1px solid var(--grey-600)', borderRadius: 4, cursor: 'pointer',
-                color: 'var(--grey-400)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+              style={{ background: 'none', border: '1px solid var(--inverse-fg-muted)', borderRadius: 4, cursor: 'pointer',
+                color: 'var(--inverse-fg-muted)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
               {showScore ? `${masteredCount} / ${totalUnique} mastered` : 'Score'}
             </button>
             <button onClick={() => setPaused(!paused)}
-              style={{ background: 'none', border: '1px solid var(--white)', borderRadius: 4, cursor: 'pointer',
-                color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+              style={{ background: 'none', border: '1px solid var(--inverse-fg)', borderRadius: 4, cursor: 'pointer',
+                color: 'var(--inverse-fg)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
               ■ Pause
             </button>
             <button onClick={() => setShowQuitConfirm(true)}
-              style={{ background: 'none', border: '1px solid var(--grey-500)', borderRadius: 4, cursor: 'pointer',
-                color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+              style={{ background: 'none', border: '1px solid var(--inverse-fg-muted)', borderRadius: 4, cursor: 'pointer',
+                color: 'var(--inverse-fg-muted)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
               ← Quit
             </button>
           </div>
@@ -319,20 +319,20 @@ export default function QuizView() {
         </button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px',
           fontFamily: 'var(--font-mono)', fontSize: 11 }}>
-          <span style={{ color: 'var(--grey-500)' }}>{formatTime(elapsed)}</span>
+          <span style={{ color: 'var(--inverse-fg-muted)' }}>{formatTime(elapsed)}</span>
           <button onClick={() => setShowScore(v => !v)}
-            style={{ background: 'none', border: '1px solid var(--grey-600)', borderRadius: 4, cursor: 'pointer',
-              color: 'var(--grey-400)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+            style={{ background: 'none', border: '1px solid var(--inverse-fg-muted)', borderRadius: 4, cursor: 'pointer',
+              color: 'var(--inverse-fg-muted)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
             {showScore ? `${correctCount} / ${answeredCount}` : 'Score'}
           </button>
           <button onClick={() => setPaused(!paused)}
-            style={{ background: 'none', border: '1px solid var(--white)', borderRadius: 4, cursor: 'pointer',
-              color: 'var(--white)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+            style={{ background: 'none', border: '1px solid var(--inverse-fg)', borderRadius: 4, cursor: 'pointer',
+              color: 'var(--inverse-fg)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
             ■ Pause
           </button>
           <button onClick={() => setShowQuitConfirm(true)}
-            style={{ background: 'none', border: '1px solid var(--grey-500)', borderRadius: 4, cursor: 'pointer',
-              color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
+            style={{ background: 'none', border: '1px solid var(--inverse-fg-muted)', borderRadius: 4, cursor: 'pointer',
+              color: 'var(--inverse-fg-muted)', fontFamily: 'var(--font-mono)', fontSize: 11, padding: '2px 8px' }}>
             ← Quit
           </button>
         </div>
