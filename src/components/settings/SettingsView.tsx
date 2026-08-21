@@ -604,6 +604,24 @@ export default function SettingsView() {
               at the answer. When filled in, it appears beneath the correct/incorrect feedback
               after you answer a question during a quiz.
             </p>
+
+            <p style={{ fontWeight: 700, marginBottom: 4, marginTop: 14 }}>Group (field 10)</p>
+            <p style={{ marginBottom: 0 }}>
+              Optional. A free-text label for the question's family or subtopic — separate from
+              question type (Multiple Choice / True-False / Essay). Use it to group related
+              questions within a quiz, e.g. <strong>Trigonometry</strong> vs. <strong>General Math</strong>,
+              or <strong>Anatomy</strong> vs. <strong>Physiology</strong>. Leave blank if you don't need
+              this level of grouping.
+            </p>
+
+            <p style={{ fontWeight: 700, marginBottom: 4, marginTop: 14 }}>nid (field 11)</p>
+            <p style={{ marginBottom: 0 }}>
+              Optional, and intentionally the last field — this is meant to be set and tracked by
+              hand rather than generated automatically. It ties a question to its picture: give a
+              question an nid (e.g. <code>n17</code>) and a matching filename in your pack's{' '}
+              <strong>media</strong> folder attaches to it. If a question has no image, leave nid
+              blank.
+            </p>
           </div>
         </div>
       )}
