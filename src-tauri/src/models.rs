@@ -71,6 +71,8 @@ pub struct HistoryEntry {
 pub struct QuestionResult {
     pub question_id: String,
     pub question_text: String,
+    #[serde(default)]
+    pub question_number: String,
     pub correct: bool,
     pub user_answer: String,
     pub correct_answer: String,
