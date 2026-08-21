@@ -109,6 +109,7 @@ export default function QuizView() {
       return {
         questionId: q.id,
         questionText: q.questionText,
+        questionNumber: q.questionNumber,
         correct,
         userAnswer,
         correctAnswer: q.remappedAnswer,
