@@ -89,9 +89,13 @@ export default function QuizView() {
   }, [session.startTime, paused, finished]);
 
   const isCorrectAnswer = useCallback((q: ShuffledQuestion, userAnswer: string) => {
-    if (q.questionType === 'ESSAY') return userAnswer === 'CORRECT';
+    // Skip-mark buttons apply regardless of question type, so they must be
+    // checked before the essay-specific rule below — otherwise a skip-marked-
+    // correct essay answer (userAnswer 'SKIP_CORRECT') fails the essay check
+    // (which only accepts the literal 'CORRECT') and is scored as wrong.
     if (userAnswer === 'SKIP_CORRECT') return true;
     if (userAnswer === 'SKIP_INCORRECT') return false;
+    if (q.questionType === 'ESSAY') return userAnswer === 'CORRECT';
     return userAnswer === q.remappedAnswer;
   }, []);
 
@@ -186,6 +190,23 @@ export default function QuizView() {
     else next();
   }, [untilCorrect, handleUntilCorrectNext, currentIndex, questions.length, handleFinish, next]);
 
+  // The question actually shown right now, for the gamepad hook. In Until
+  // Correct mode this is queue[0], not questions[currentIndex] — currentIndex
+  // never moves in that mode since it advances via the local queue instead.
+  const currentQuestionForGamepad = untilCorrect ? (queue[0] ?? null) : (questions[currentIndex] ?? null);
+
+  // Single entry point gamepad answers go through, so Until Correct mode's
+  // bookkeeping (mastered set, attempt count) stays in sync with controller
+  // input the same way it already does for mouse/keyboard input.
+  const handleGamepadAnswer = useCallback((questionId: string, value: string) => {
+    if (untilCorrect) {
+      const q = queue[0];
+      if (q && q.id === questionId) handleUntilCorrectAnswer(q, value);
+    } else {
+      setAnswer(questionId, value);
+    }
+  }, [untilCorrect, queue, handleUntilCorrectAnswer, setAnswer]);
+
   // Esc mirrors the B button: close an open overlay first, resume if paused,
   // otherwise prompt to quit. If the quit-confirm dialog is already up,
   // ConfirmModal handles Esc itself (cancels), so this is a no-op then.
@@ -206,6 +227,8 @@ export default function QuizView() {
     optionFocusIndex,
     setOptionFocusIndex,
     optionCount: currentOptionCount,
+    currentQuestion: currentQuestionForGamepad,
+    onAnswer: handleGamepadAnswer,
     onSelectFocused,
     onAdvance,
     onToggleScore: () => setShowScore(v => !v),
