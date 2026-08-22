@@ -7,9 +7,27 @@ export interface GamepadPollState {
 
 type Listener = (state: GamepadPollState) => void;
 
+// While a gamepad is connected we poll every frame (~16ms) for responsive
+// controls. While none is connected we poll far less often — there's
+// nothing to read, and it cuts the number of navigator.getGamepads() calls
+// (see IDLE_POLL_MS below for why that matters) by roughly 30x.
+const ACTIVE_POLL_MS = 16;
+const IDLE_POLL_MS = 500;
+// After a 'gamepaddisconnected' event, on some WebKitGTK builds (the engine
+// Tauri uses on Linux) the platform's gamepad backend does synchronous work
+// tearing the device down. Calling navigator.getGamepads() again immediately
+// — which a 60Hz rAF loop does by design — can land inside that window and
+// hang the render thread, which is indistinguishable from the whole app
+// freezing. Pausing polling entirely for a short settle window right after
+// a disconnect event avoids ever making that call while the backend is
+// mid-teardown, rather than trying to detect the hang after the fact (which
+// isn't possible — a synchronous hang blocks the very thread that would
+// need to notice it).
+const DISCONNECT_SETTLE_MS = 300;
+
 /**
- * Singleton gamepad poller. Runs exactly one requestAnimationFrame loop for
- * the whole app, shared by every hook/component that needs controller input.
+ * Singleton gamepad poller. Runs exactly one polling loop for the whole app,
+ * shared by every hook/component that needs controller input.
  *
  * Once a gamepad is found, its browser-assigned `index` is locked in and
  * reused every tick — we do NOT re-pick "whichever comes first" each frame.
@@ -21,7 +39,7 @@ type Listener = (state: GamepadPollState) => void;
  */
 class GamepadPoller {
   private listeners = new Set<Listener>();
-  private rafId: number | null = null;
+  private timerId: ReturnType<typeof setTimeout> | null = null;
   private lastButtons: boolean[] = [];
   private lockedIndex: number | null = null;
   // Ghost-gamepad detection: some browser/OS/dongle combinations leave a
@@ -34,6 +52,9 @@ class GamepadPoller {
   // dropped rather than trusted indefinitely.
   private lastTimestamp: number | null = null;
   private stuckSince: number | null = null;
+  // See DISCONNECT_SETTLE_MS above — while set, poll() skips calling
+  // navigator.getGamepads() entirely and just reports disconnected.
+  private settleUntil: number | null = null;
 
   subscribe(listener: Listener): () => void {
     this.listeners.add(listener);
@@ -45,23 +66,26 @@ class GamepadPoller {
   }
 
   private ensureRunning() {
-    if (this.rafId !== null) return;
+    if (this.timerId !== null) return;
     window.addEventListener('gamepaddisconnected', this.onDisconnect);
     const tick = () => {
+      const wasConnected = this.lockedIndex !== null;
       this.poll();
-      this.rafId = requestAnimationFrame(tick);
+      const delay = wasConnected ? ACTIVE_POLL_MS : IDLE_POLL_MS;
+      this.timerId = setTimeout(tick, delay);
     };
-    this.rafId = requestAnimationFrame(tick);
+    this.timerId = setTimeout(tick, 0);
   }
 
   private stop() {
-    if (this.rafId !== null) cancelAnimationFrame(this.rafId);
-    this.rafId = null;
+    if (this.timerId !== null) clearTimeout(this.timerId);
+    this.timerId = null;
     window.removeEventListener('gamepaddisconnected', this.onDisconnect);
     this.lastButtons = [];
     this.lockedIndex = null;
     this.lastTimestamp = null;
     this.stuckSince = null;
+    this.settleUntil = null;
   }
 
   private onDisconnect = () => {
@@ -73,6 +97,7 @@ class GamepadPoller {
     this.lastButtons = [];
     this.lastTimestamp = null;
     this.stuckSince = null;
+    this.settleUntil = Date.now() + DISCONNECT_SETTLE_MS;
   };
 
   private forceDisconnected() {
@@ -80,6 +105,11 @@ class GamepadPoller {
     this.lastButtons = [];
     this.lastTimestamp = null;
     this.stuckSince = null;
+    this.settleUntil = Date.now() + DISCONNECT_SETTLE_MS;
+    this.emitDisconnected();
+  }
+
+  private emitDisconnected() {
     const state: GamepadPollState = {
       connected: false,
       justPressed: () => false,
@@ -90,6 +120,14 @@ class GamepadPoller {
   }
 
   private poll() {
+    if (this.settleUntil !== null) {
+      if (Date.now() < this.settleUntil) {
+        this.emitDisconnected();
+        return;
+      }
+      this.settleUntil = null;
+    }
+
     try {
       const gamepads = navigator.getGamepads();
 
@@ -106,13 +144,7 @@ class GamepadPoller {
       }
 
       if (!gp) {
-        const state: GamepadPollState = {
-          connected: false,
-          justPressed: () => false,
-          pressed: () => false,
-          axes: [],
-        };
-        this.listeners.forEach(l => { try { l(state); } catch {} });
+        this.emitDisconnected();
         this.lastButtons = [];
         this.lastTimestamp = null;
         this.stuckSince = null;
