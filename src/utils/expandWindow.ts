@@ -13,6 +13,12 @@ let counter = 0;
  * the one URL guaranteed to resolve correctly for a freshly-opened window
  * in both dev and a packaged build — a deep react-router path wouldn't
  * have anything to fall back to it without a real server doing rewrites.
+ *
+ * Opens maximized by default (maximized: true) so the image is immediately
+ * as large and legible as possible — that's the whole point of "expand".
+ * width/height are kept as the size the window restores to if the user
+ * un-maximizes it via the title bar; resizable stays on so that's a real,
+ * usable option rather than a fixed full-screen window.
  */
 export function openExpandedViewer(params: {
   type: 'media' | 'refs';
@@ -36,5 +42,7 @@ export function openExpandedViewer(params: {
     height: 800,
     minWidth: 400,
     minHeight: 300,
+    resizable: true,
+    maximized: true,
   });
 }
