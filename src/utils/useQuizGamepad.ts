@@ -24,6 +24,17 @@ import { openExpandedViewer } from './expandWindow';
  * unconditionally everywhere — not just wherever happens to re-render.
  * The navigation direction handling (D-pad / left stick) is fixed and not
  * configurable.
+ *
+ * IMPORTANT: `opts` is read through a ref (optsRef) and the poller
+ * subscription happens exactly once (empty effect deps). Do NOT add opts
+ * fields back into the effect's dependency array — callers pass inline
+ * callbacks (e.g. onToggleScore, onResume) that get a new identity every
+ * render, and resubscribing gamepadPoller on every render was the root
+ * cause of a real bug: it briefly drops the listener count to 0, which
+ * reset the poller's held-button tracking, making a still-held button
+ * (e.g. holding RS to expand a reference image) look "freshly pressed"
+ * again on the next ~16ms tick — spawning a new expanded-viewer window
+ * every tick for as long as the button was held.
  */
 
 interface UseQuizGamepadOptions {
@@ -54,10 +65,13 @@ interface UseQuizGamepadOptions {
 export function useQuizGamepad(opts: UseQuizGamepadOptions) {
   const lastAxisDir = useRef(0);
   const lastAxisTime = useRef(0);
+  const optsRef = useRef(opts);
+  optsRef.current = opts;
 
   useEffect(() => {
     return gamepadPoller.subscribe(state => {
       if (!state.connected) return;
+      const opts = optsRef.current;
       if (opts.suppressed) return;
       const { justPressed, axes } = state;
 
@@ -218,10 +232,5 @@ export function useQuizGamepad(opts: UseQuizGamepadOptions) {
         if (justPressed(m.skipIncorrect)) opts.onAnswer(q.id, 'SKIP_INCORRECT');
       }
     });
-  }, [
-    opts.optionFocusIndex, opts.optionCount, opts.currentQuestion, opts.onAnswer,
-    opts.onSelectFocused, opts.onAdvance, opts.onToggleScore,
-    opts.onResume, opts.onQuitRequest, opts.pauseMenuIndex, opts.setPauseMenuIndex,
-    opts.suppressed,
-  ]);
+  }, []);
 }
