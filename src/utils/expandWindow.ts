@@ -1,6 +1,5 @@
 import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
-
-let counter = 0;
+import { emitTo } from '@tauri-apps/api/event';
 
 /**
  * Opens a new, separate OS window running a minimal expanded-image viewer.
@@ -19,13 +18,53 @@ let counter = 0;
  * width/height are kept as the size the window restores to if the user
  * un-maximizes it via the title bar; resizable stays on so that's a real,
  * usable option rather than a fixed full-screen window.
+ *
+ * ONE WINDOW PER TYPE: only a single 'media' expanded-viewer window and a
+ * single 'refs' expanded-viewer window are ever open at once, tracked in
+ * `openWindows` below by a fixed label ('expand-media' / 'expand-refs')
+ * rather than a unique-per-call label. If RS/LS is pressed again while a
+ * window of that type is already open — e.g. the player pressed RS on one
+ * reference image, then navigated to another and pressed RS again — the
+ * existing window is focused and told (via emitTo + a listener in
+ * ExpandedViewer.tsx) to show the new image, instead of a second native
+ * window being spawned alongside the first. Without this, every RS press
+ * opened another full OS window, which is expensive and gets out of hand
+ * fast if the player is browsing through several references.
  */
+
+type ViewerType = 'media' | 'refs';
+
+const openWindows: Record<ViewerType, { label: string; win: WebviewWindow } | null> = {
+  media: null,
+  refs: null,
+};
+
+export interface ExpandViewerUpdatePayload {
+  quizId: string;
+  questionId: string;
+  index: number;
+}
+
 export function openExpandedViewer(params: {
-  type: 'media' | 'refs';
+  type: ViewerType;
   quizId: string;
   questionId?: string;
   index: number;
 }) {
+  const existing = openWindows[params.type];
+  if (existing) {
+    // Already open — bring it to front and tell it to switch content
+    // rather than opening a second window on top of it.
+    existing.win.setFocus().catch(() => {});
+    const payload: ExpandViewerUpdatePayload = {
+      quizId: params.quizId,
+      questionId: params.questionId ?? '',
+      index: params.index,
+    };
+    emitTo(existing.label, 'expand-viewer-update', payload).catch(() => {});
+    return;
+  }
+
   const search = new URLSearchParams({
     expand: params.type,
     quizId: params.quizId,
@@ -33,9 +72,9 @@ export function openExpandedViewer(params: {
     index: String(params.index),
   }).toString();
 
-  const label = `expand-${Date.now()}-${counter++}`;
+  const label = `expand-${params.type}`;
 
-  new WebviewWindow(label, {
+  const win = new WebviewWindow(label, {
     url: `index.html?${search}`,
     title: params.type === 'media' ? 'LAMBDAn — Media' : 'LAMBDAn — References',
     width: 1000,
@@ -45,4 +84,12 @@ export function openExpandedViewer(params: {
     resizable: true,
     maximized: true,
   });
+
+  openWindows[params.type] = { label, win };
+
+  const clearIfCurrent = () => {
+    if (openWindows[params.type]?.label === label) openWindows[params.type] = null;
+  };
+  win.once('tauri://destroyed', clearIfCurrent);
+  win.once('tauri://error', clearIfCurrent);
 }
