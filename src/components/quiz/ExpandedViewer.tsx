@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { invoke, convertFileSrc } from '@tauri-apps/api/core';
 import { getCurrentWindow } from '@tauri-apps/api/window';
+import { listen } from '@tauri-apps/api/event';
 import { gamepadPoller } from '@/utils/gamepadPoller';
 import { useTheme } from '@/utils/useTheme';
 import type { AppSettings, Question, Quiz, GamepadMapping } from '@/types';
+import type { ExpandViewerUpdatePayload } from '@/utils/expandWindow';
 
 interface ImageItem {
   path: string;
@@ -17,22 +19,42 @@ interface ImageItem {
  * bigger. Closes itself on B (gamepad), Escape (keyboard), or the on-screen
  * close button. Reads its own gamepad mapping fresh from the backend since
  * this window doesn't share the main window's in-memory store state.
+ *
+ * `type` (media vs refs) is fixed for the lifetime of this window — only
+ * `quizId`, `questionId`, and `index` can change after the window opens.
+ * That's because openExpandedViewer only ever reuses an existing window of
+ * the SAME type (there's one 'media' window and one 'refs' window, tracked
+ * separately); a request for the other type always opens its own window.
+ * When the main quiz window calls openExpandedViewer again for a window
+ * that's already open, it emits 'expand-viewer-update' instead of opening
+ * a new window — the listener below applies that update in place.
  */
 export default function ExpandedViewer() {
-  const params = new URLSearchParams(window.location.search);
-  const type = params.get('expand') === 'refs' ? 'refs' : 'media';
-  const quizId = params.get('quizId') ?? '';
-  const questionId = params.get('questionId') ?? '';
-  const initialIndex = Number(params.get('index') ?? 0) || 0;
+  const initialParams = new URLSearchParams(window.location.search);
+  const type = initialParams.get('expand') === 'refs' ? 'refs' : 'media';
+
+  const [quizId, setQuizId] = useState(initialParams.get('quizId') ?? '');
+  const [questionId, setQuestionId] = useState(initialParams.get('questionId') ?? '');
+  const [idx, setIdx] = useState(Number(initialParams.get('index') ?? 0) || 0);
 
   const [images, setImages] = useState<ImageItem[]>([]);
-  const [idx, setIdx] = useState(initialIndex);
   const [loading, setLoading] = useState(true);
   const [backButton, setBackButton] = useState(1); // sensible default (standard "B") until fetched
   const [theme, setTheme] = useState<AppSettings['theme']>('default');
   useTheme(theme);
   const lenRef = useRef(0);
   lenRef.current = images.length;
+
+  // Picks up quizId/questionId/index changes sent from the main window when
+  // this same viewer window is reused instead of a new one being opened.
+  useEffect(() => {
+    const unlistenPromise = listen<ExpandViewerUpdatePayload>('expand-viewer-update', (event) => {
+      setQuizId(event.payload.quizId);
+      setQuestionId(event.payload.questionId);
+      setIdx(event.payload.index);
+    });
+    return () => { unlistenPromise.then(unlisten => unlisten()); };
+  }, []);
 
   useEffect(() => {
     (async () => {
