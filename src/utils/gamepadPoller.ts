@@ -36,6 +36,17 @@ const DISCONNECT_SETTLE_MS = 300;
  * every frame can silently flip between them, producing exactly the kind of
  * "button mapping randomly reverses" symptom this was causing. Locking to
  * one index for the whole session eliminates that.
+ *
+ * NOTE on stop(): this only tears down the polling timer/listener. It does
+ * NOT reset lastButtons/lockedIndex/lastTimestamp. Those persist across a
+ * listeners.size === 0 gap on purpose — a hook briefly unsubscribing and
+ * resubscribing (e.g. during a React effect re-run) must not make an
+ * already-held button look "freshly pressed" to whichever listener
+ * subscribes next. That exact scenario previously caused a real bug: a
+ * held controller button spawned a new native window on every poll tick
+ * because losing held-button state made justPressed() fire repeatedly.
+ * Button/lock state is only meant to reset on an actual device change,
+ * which onDisconnect / forceDisconnected already handle explicitly.
  */
 class GamepadPoller {
   private listeners = new Set<Listener>();
@@ -81,11 +92,8 @@ class GamepadPoller {
     if (this.timerId !== null) clearTimeout(this.timerId);
     this.timerId = null;
     window.removeEventListener('gamepaddisconnected', this.onDisconnect);
-    this.lastButtons = [];
-    this.lockedIndex = null;
-    this.lastTimestamp = null;
-    this.stuckSince = null;
-    this.settleUntil = null;
+    // Intentionally NOT resetting lastButtons/lockedIndex/lastTimestamp/
+    // stuckSince/settleUntil here — see the class-level NOTE above.
   }
 
   private onDisconnect = () => {
