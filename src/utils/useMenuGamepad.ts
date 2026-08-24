@@ -32,16 +32,31 @@ const SUB_TABS: SettingsSubTab[] = ['quiz', 'gamepad', 'display', 'about', 'vers
  * Settings > Gamepad, read fresh from the store on every poll tick via
  * useStore.getState() — not passed in as a prop — so every page always uses
  * the exact same, always-current mapping with no risk of staleness.
+ *
+ * IMPORTANT: everything in `opts` except `enabled` is read through a ref
+ * (optsRef), and the poller subscription is only re-created when `enabled`
+ * changes. Callers pass inline callbacks (onConfirm, onFocusChange, etc.)
+ * that get a new identity every render — putting those in the effect's
+ * dependency array causes the effect to tear down and resubscribe on
+ * nearly every render, which briefly drops gamepadPoller's listener count
+ * to 0 and resets its held-button tracking (see useQuizGamepad.ts for the
+ * concrete bug this caused there — expand-viewer windows spawning on every
+ * poll tick while a button was held). `enabled` is kept as a real
+ * dependency on purpose: it's an intentional on/off toggle, not incidental
+ * render churn.
  */
 export function useMenuGamepad(opts: MenuGamepadOptions) {
   const lastAxisDir = useRef(0);
   const lastAxisTime = useRef(0);
+  const optsRef = useRef(opts);
+  optsRef.current = opts;
 
   useEffect(() => {
     if (!opts.enabled) return;
 
     return gamepadPoller.subscribe(state => {
       if (!state.connected) return;
+      const opts = optsRef.current;
       const { justPressed, axes } = state;
       const m = useStore.getState().gamepadMapping;
 
@@ -93,10 +108,5 @@ export function useMenuGamepad(opts: MenuGamepadOptions) {
       }
       lastAxisDir.current = axisActive ? (axisY < 0 ? -1 : 1) : 0;
     });
-  }, [
-    opts.enabled, opts.currentPage, opts.currentSubTab,
-    opts.itemCount, opts.focusedIndex,
-    opts.onNavigatePage, opts.onNavigateSubTab, opts.onFocusChange,
-    opts.onConfirm, opts.onBack, opts.onSecondary, opts.onTertiary,
-  ]);
+  }, [opts.enabled]);
 }
