@@ -166,6 +166,12 @@ pub async fn import_pack(
     }
 
     let mut nid_map: HashMap<String, Vec<(String, PathBuf)>> = HashMap::new();
+    // Exact stem -> file lookup, used to resolve individual images referenced
+    // in an explicit "+"-combined nid (see resolution below). Kept separate
+    // from nid_map because nid_map groups every file sharing a leading
+    // number together, which is the right behavior for a bare nid but too
+    // broad when the author has explicitly enumerated which files to use.
+    let mut nid_exact: HashMap<String, PathBuf> = HashMap::new();
     let mut reference_images: Vec<ReferenceImage> = Vec::new();
 
     let media_tmp = tmp_dir.join("media");
@@ -190,6 +196,7 @@ pub async fn import_pack(
             } else if let Some(base) = nid_base(&stem.to_lowercase()) {
                 let dest = nid_dir.join(&fname);
                 std::fs::copy(&fpath, &dest)?;
+                nid_exact.insert(stem.to_lowercase(), dest.clone());
                 nid_map.entry(base).or_default().push((stem.to_lowercase(), dest));
             }
         }
@@ -289,16 +296,42 @@ pub async fn import_pack(
             let question_type = infer_type(&option_a, &option_b, &option_c, &get(5), &get(6));
 
             let (image_path, nid_variants_json) = if !nid.is_empty() {
-                let base = nid_base(&nid).unwrap_or(nid.clone());
-                if let Some(variants) = nid_map.get(&base) {
-                    let paths: Vec<String> = variants.iter()
-                        .map(|(_, p)| p.to_string_lossy().to_string())
-                        .collect();
-                    let first = paths.first().cloned();
-                    (first, serde_json::to_string(&paths).unwrap_or("[]".into()))
+                // A plain nid ("n11") keeps the original behavior: it expands
+                // to every file sharing that leading number (n11, n11a, n11b, …),
+                // sorted alphabetically, so existing packs are unaffected.
+                //
+                // A "+"-combined nid ("n11+n11a+n11b") is explicit: each token
+                // is resolved to its own exact file first, in the order given,
+                // so the author controls precisely which images attach and in
+                // what order. A token that isn't an exact filename (e.g. it's
+                // itself a base with its own lettered variants) falls back to
+                // the shared-base group, same as the plain-nid case.
+                let tokens: Vec<&str> = nid.split('+').map(|t| t.trim()).filter(|t| !t.is_empty()).collect();
+                let paths: Vec<String> = if tokens.len() > 1 {
+                    let mut seen = std::collections::HashSet::new();
+                    let mut merged: Vec<String> = Vec::new();
+                    for token in tokens {
+                        if let Some(p) = nid_exact.get(token) {
+                            let s = p.to_string_lossy().to_string();
+                            if seen.insert(s.clone()) { merged.push(s); }
+                        } else if let Some(base) = nid_base(token) {
+                            if let Some(variants) = nid_map.get(&base) {
+                                for (_, p) in variants {
+                                    let s = p.to_string_lossy().to_string();
+                                    if seen.insert(s.clone()) { merged.push(s); }
+                                }
+                            }
+                        }
+                    }
+                    merged
                 } else {
-                    (None, "[]".into())
-                }
+                    let base = nid_base(&nid).unwrap_or(nid.clone());
+                    nid_map.get(&base)
+                        .map(|variants| variants.iter().map(|(_, p)| p.to_string_lossy().to_string()).collect())
+                        .unwrap_or_default()
+                };
+                let first = paths.first().cloned();
+                (first, serde_json::to_string(&paths).unwrap_or("[]".into()))
             } else {
                 (None, "[]".into())
             };
