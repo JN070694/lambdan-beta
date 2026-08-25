@@ -226,8 +226,8 @@ export default function SettingsView() {
   const TABS: SettingsSubTab[] = ['quiz', 'gamepad', 'display', 'about', 'version'];
 
   return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24,
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, flexShrink: 0,
         opacity: testModeActive ? 0.35 : 1, pointerEvents: testModeActive ? 'none' : 'auto',
         transition: 'opacity 0.15s ease' }}>
         <TriggerIcon side="left" label="LB" />
@@ -509,10 +509,10 @@ export default function SettingsView() {
       )}
 
       {tab === 'about' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, flex: 1, minHeight: 0 }}>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            borderBottom: '1px solid var(--grey-300)', paddingBottom: 6, marginBottom: -2,
+            borderBottom: '1px solid var(--grey-300)', paddingBottom: 6, marginBottom: -2, flexShrink: 0,
           }}>
             <span className="section-label" style={{ border: 'none', margin: 0, padding: 0 }}>How to Use</span>
             <button className="btn btn-secondary btn-sm" onClick={handleCopyAbout}
@@ -520,7 +520,20 @@ export default function SettingsView() {
               {aboutCopied ? '✓ Copied' : 'Copy'}
             </button>
           </div>
-          <div ref={aboutCardRef} className="card" data-stick-scroll style={{ maxHeight: 520, overflowY: 'auto', fontSize: 13, lineHeight: 1.7 }}>
+          {/* flex:1 + minHeight:0 makes this card fill exactly the remaining
+              vertical space instead of a fixed maxHeight, so its own
+              overflow-y:auto is the ONLY scrollbar that can ever appear here
+              — the page-level .main-content scrollbar never kicks in behind
+              it. Previously this had a fixed maxHeight of 520px, which had
+              no relationship to the actual window size: whenever the tab
+              bar + header + 520px card added up to more than the visible
+              area (e.g. on a shorter window), .main-content grew a second,
+              page-level scrollbar behind this one. That outer scrollbar was
+              only ever reachable with a mouse — the gamepad's right stick
+              targets [data-stick-scroll] (this card) first, so a controller
+              had no way to reach whatever had scrolled out of view in the
+              outer region. */}
+          <div ref={aboutCardRef} className="card" data-stick-scroll style={{ flex: 1, minHeight: 0, overflowY: 'auto', fontSize: 13, lineHeight: 1.7 }}>
             <p style={{ marginBottom: 10 }}>
               <strong>LAMBDAn</strong> is an offline quiz app. Import question packs, take quizzes,
               and track your results — all stored locally with no internet required.
