@@ -39,6 +39,19 @@ export default function MediaOverlay() {
           </div>
         )}
       </div>
+      {variants.length > 0 && (
+        <div style={{ flexShrink: 0, display: 'flex', justifyContent: 'center', alignItems: 'center',
+          gap: 8, padding: '10px 0', borderTop: '1px solid var(--grey-300)' }}>
+          <div style={{
+            width: 22, height: 22, borderRadius: '50%', background: 'var(--inverse-bg)', color: 'var(--inverse-fg)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-mono)', fontSize: 9, fontWeight: 700, flexShrink: 0,
+          }}>
+            LS
+          </div>
+          <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--grey-600)' }}>Expand</span>
+        </div>
+      )}
     </div>
   );
 }
