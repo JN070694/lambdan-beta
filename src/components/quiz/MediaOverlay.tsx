@@ -38,6 +38,25 @@ export default function MediaOverlay() {
             </button>
           </div>
         )}
+        {variants.length === 0 && (
+          <div style={{ padding: 20, textAlign: 'center', color: 'var(--grey-500)', fontFamily: 'var(--font-mono)', fontSize: 12 }}>
+            This question has no linked media
+          </div>
+        )}
+        {variants.length > 0 && (
+          <div style={{ borderTop: '1.5px solid var(--black)', flexShrink: 0, overflowY: 'auto', maxHeight: 140 }}>
+            {variants.map((v, i) => (
+              <button key={v} onClick={() => setMediaVariant(i)}
+                style={{ display: 'block', width: '100%', textAlign: 'left',
+                  padding: '8px 14px', background: i === idx ? 'var(--black)' : 'var(--white)',
+                  color: i === idx ? 'var(--white)' : 'var(--black)', border: 'none',
+                  borderBottom: '1px solid var(--grey-300)', cursor: 'pointer',
+                  fontSize: 12, fontFamily: 'var(--font-mono)' }}>
+                {variantLabel(v)}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       {variants.length > 0 && (
         <div style={{ flexShrink: 0, display: 'flex', justifyContent: 'center', alignItems: 'center',
