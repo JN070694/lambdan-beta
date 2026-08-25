@@ -441,12 +441,12 @@ export default function SettingsView() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
               <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)',
-                fontWeight: settings.buttonIconStyle === 'xbox' ? 700 : 400,
-                color: settings.buttonIconStyle === 'xbox' ? 'var(--black)' : 'var(--grey-500)' }}>
-                Xbox
+                fontWeight: settings.buttonIconStyle === 'playstation' ? 700 : 400,
+                color: settings.buttonIconStyle === 'playstation' ? 'var(--black)' : 'var(--grey-500)' }}>
+                PlayStation
               </span>
               <button
-                className={`toggle ${settings.buttonIconStyle === 'playstation' ? 'on' : 'off'}`}
+                className={`toggle ${settings.buttonIconStyle === 'xbox' ? 'on' : 'off'}`}
                 onClick={() => saveSettings({
                   ...settings,
                   buttonIconStyle: settings.buttonIconStyle === 'xbox' ? 'playstation' : 'xbox',
@@ -455,9 +455,9 @@ export default function SettingsView() {
                 <div className="toggle-knob" />
               </button>
               <span style={{ fontSize: 12, fontFamily: 'var(--font-mono)',
-                fontWeight: settings.buttonIconStyle === 'playstation' ? 700 : 400,
-                color: settings.buttonIconStyle === 'playstation' ? 'var(--black)' : 'var(--grey-500)' }}>
-                PlayStation
+                fontWeight: settings.buttonIconStyle === 'xbox' ? 700 : 400,
+                color: settings.buttonIconStyle === 'xbox' ? 'var(--black)' : 'var(--grey-500)' }}>
+                Xbox
               </span>
             </div>
           </div>
