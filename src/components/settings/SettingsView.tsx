@@ -573,7 +573,7 @@ export default function SettingsView() {
             </p>
             <pre style={{ background: 'var(--grey-100)', padding: '8px 10px', borderRadius: 6,
               fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 10, overflowX: 'auto' }}>
-{`[1] Q#  [2] Question text  [3] A  [4] B  [5] C  [6] D  [7] E  [8] Answer  [9] Explanation  [10] Group  [11] nid`}
+{`[1] Q#  [2] Question text  [3] A  [4] B  [5] C  [6] D  [7] E  [8] Answer  [9] Explanation  [10] Group  [11] Nid`}
             </pre>
 
             <div style={{ background: 'var(--grey-200)', border: '1px solid var(--grey-400)', borderRadius: 6,
@@ -655,7 +655,7 @@ export default function SettingsView() {
           <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
               ['Developer', 'Jonathan Nicholson'],
-              ['Version', '1.0.0-beta'],
+              ['Version', '1.0.0'],
               ['Built with', 'Tauri v2 · React · TypeScript'],
               ['Database', 'SQLite (rusqlite)'],
               ['License', 'AGPL-3.0'],
