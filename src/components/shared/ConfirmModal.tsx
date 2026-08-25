@@ -13,14 +13,14 @@ interface Props {
 
 /**
  * Confirm modal with built-in gamepad support.
- * Left/Right D-pad or stick navigates between No (left, default) and Yes (right).
+ * Left/Right D-pad or stick navigates between No (left) and Yes (right, default).
  * A = confirm focused button. B = cancel. Esc = cancel.
  */
 export default function ConfirmModal({
   title, message, onConfirm, onCancel,
   confirmLabel = 'Yes', cancelLabel = 'No',
 }: Props) {
-  const [focus, setFocus] = useState(0); // 0 = cancel (left/default), 1 = confirm (right)
+  const [focus, setFocus] = useState(1); // 0 = cancel (left), 1 = confirm (right, default)
   const lastAxisDir = useRef(0);
   const lastAxisTime = useRef(0);
 
@@ -73,14 +73,14 @@ export default function ConfirmModal({
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button
-            className="btn btn-primary"
-            autoFocus
+            className="btn btn-secondary"
             onClick={onCancel}
             style={focus === 0 ? { outline: '2px solid var(--black)', outlineOffset: 2 } : undefined}>
             {cancelLabel}
           </button>
           <button
-            className="btn btn-secondary"
+            className="btn btn-primary"
+            autoFocus
             onClick={onConfirm}
             style={focus === 1 ? { outline: '2px solid var(--black)', outlineOffset: 2 } : undefined}>
             {confirmLabel}
