@@ -76,6 +76,8 @@ pub struct QuestionResult {
     pub correct: bool,
     pub user_answer: String,
     pub correct_answer: String,
+    #[serde(default)]
+    pub correct_answer_text: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
