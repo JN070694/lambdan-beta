@@ -102,7 +102,7 @@ export default function QuizEndScreen({ onRetakeQuiz }: { onRetakeQuiz?: () => v
               <div key={r.questionId} className="card-muted" style={{ fontSize: 13 }}>
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>{r.questionText}</div>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--grey-500)' }}>
-                  Your answer: {r.userAnswer || '—'} · Correct: {r.correctAnswer}
+                  Answer: {r.correctAnswerText || r.correctAnswer}
                 </div>
               </div>
             ))}
