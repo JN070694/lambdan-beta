@@ -106,6 +106,9 @@ export default function QuizView() {
     const results: QuestionResult[] = questions.map(q => {
       const userAnswer = answers[q.id] ?? '';
       const correct = isCorrectAnswer(q, userAnswer);
+      const correctAnswerText = q.questionType === 'ESSAY'
+        ? q.correctAnswer
+        : (q.shuffledOptions.find(o => o.label === q.remappedAnswer)?.text ?? q.remappedAnswer);
       return {
         questionId: q.id,
         questionText: q.questionText,
@@ -113,6 +116,7 @@ export default function QuizView() {
         correct,
         userAnswer,
         correctAnswer: q.remappedAnswer,
+        correctAnswerText,
       };
     });
 
