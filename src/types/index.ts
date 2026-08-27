@@ -62,6 +62,7 @@ export interface QuestionResult {
   correct: boolean;
   userAnswer: string;
   correctAnswer: string;
+  correctAnswerText?: string;
 }
 
 export interface HistoryEntry {
