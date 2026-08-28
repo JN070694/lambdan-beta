@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { save } from '@tauri-apps/plugin-dialog';
-import { exit } from '@tauri-apps/plugin-process';
 import { useStore } from '@/store';
 import type { HistoryEntry, Question } from '@/types';
 import { formatTime } from '@/utils/quiz';
@@ -211,7 +210,7 @@ export default function HistoryView() {
         <ConfirmModal
           title="Quit LAMBDAn"
           message="Are you sure you want to quit LAMBDAn?"
-          onConfirm={() => exit(0)}
+          onConfirm={() => invoke('quit')}
           onCancel={() => setShowQuitAppConfirm(false)}
           confirmLabel="Yes, Quit"
           cancelLabel="No"
