@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
-import { exit } from '@tauri-apps/plugin-process';
 import { useStore } from '@/store';
 import type { Folder, Quiz, ImportResult } from '@/types';
 import Modal from '@/components/shared/Modal';
@@ -375,7 +374,7 @@ export default function LibraryView() {
         <ConfirmModal
           title="Quit LAMBDAn"
           message="Are you sure you want to quit LAMBDAn?"
-          onConfirm={() => exit(0)}
+          onConfirm={() => invoke('quit')}
           onCancel={() => setShowQuitAppConfirm(false)}
           confirmLabel="Yes, Quit"
           cancelLabel="No"
