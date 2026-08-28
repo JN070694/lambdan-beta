@@ -1,18 +1,32 @@
 //! Keeps the OS from sleeping (or locking the screen) for as long as
 //! LAMBDAn is running. Created once in `lib.rs`'s `setup()` and stored in
 //! Tauri's managed state so it lives — and keeps its platform-specific
-//! inhibitor held — for the whole life of the app; it's released
-//! automatically when the app exits and this value drops.
+//! inhibitor held — for the whole life of the app.
+//!
+//! IMPORTANT: this is *not* released automatically just because the app
+//! "exits". `std::process::exit()` (which is what `@tauri-apps/plugin-process`'s
+//! `exit()` calls, and what Tauri's own event loop teardown uses on some
+//! platforms) terminates the process immediately and does NOT run Rust
+//! `Drop` impls. So relying on Drop alone leaves the child inhibitor
+//! process (systemd-inhibit on Linux, caffeinate on macOS) orphaned and
+//! running forever, still holding the sleep lock, until it's killed by
+//! hand or the machine reboots.
+//!
+//! To avoid that, `stop()` must be called *explicitly* before exiting —
+//! see `commands::app::quit` and the `on_window_event` handler in `lib.rs`,
+//! both of which call it before ever calling `std::process::exit`. Drop
+//! still calls `stop()` too (idempotent) as a defense-in-depth for any
+//! codepath that unwinds normally instead of hard-exiting.
 //!
 //! Platform-specific:
 //! - Windows: `SetThreadExecutionState` only holds until the next call (or
 //!   until the calling thread exits), so a background thread re-asserts it
 //!   every 30s for as long as the guard is alive.
 //! - macOS: spawns `caffeinate -dis` and keeps the child process running;
-//!   killing it (on drop) releases the sleep assertion.
+//!   killing it releases the sleep assertion.
 //! - Linux: spawns `systemd-inhibit ... sleep infinity`, which holds a
 //!   logind inhibitor lock for as long as that child process runs; killing
-//!   it (on drop) releases the lock. If `systemd-inhibit` isn't available
+//!   it releases the lock. If `systemd-inhibit` isn't available
 //!   (non-systemd distros), this logs a warning and the app simply runs
 //!   without sleep prevention rather than failing to start.
 
@@ -56,11 +70,18 @@ mod imp {
             });
             SleepGuard { running }
         }
+
+        /// Explicitly release the sleep inhibition. Safe to call more than
+        /// once. Must be called before `std::process::exit`, which would
+        /// otherwise skip `Drop` and leave execution-state asserted.
+        pub fn stop(&self) {
+            self.running.store(false, Ordering::Relaxed);
+        }
     }
 
     impl Drop for SleepGuard {
         fn drop(&mut self) {
-            self.running.store(false, Ordering::Relaxed);
+            self.stop();
         }
     }
 }
@@ -68,9 +89,10 @@ mod imp {
 #[cfg(target_os = "macos")]
 mod imp {
     use std::process::{Child, Command};
+    use std::sync::Mutex;
 
     pub struct SleepGuard {
-        child: Option<Child>,
+        child: Mutex<Option<Child>>,
     }
 
     impl SleepGuard {
@@ -81,15 +103,25 @@ mod imp {
             if child.is_none() {
                 log::warn!("caffeinate unavailable, sleep prevention disabled");
             }
-            SleepGuard { child }
+            SleepGuard { child: Mutex::new(child) }
+        }
+
+        /// Explicitly kill the caffeinate child and release the sleep
+        /// assertion. Safe to call more than once. Must be called before
+        /// `std::process::exit`, which would otherwise skip `Drop` and
+        /// leave caffeinate running as an orphan forever.
+        pub fn stop(&self) {
+            if let Ok(mut guard) = self.child.lock() {
+                if let Some(mut c) = guard.take() {
+                    let _ = c.kill();
+                }
+            }
         }
     }
 
     impl Drop for SleepGuard {
         fn drop(&mut self) {
-            if let Some(mut c) = self.child.take() {
-                let _ = c.kill();
-            }
+            self.stop();
         }
     }
 }
@@ -97,9 +129,10 @@ mod imp {
 #[cfg(target_os = "linux")]
 mod imp {
     use std::process::{Child, Command};
+    use std::sync::Mutex;
 
     pub struct SleepGuard {
-        child: Option<Child>,
+        child: Mutex<Option<Child>>,
     }
 
     impl SleepGuard {
@@ -120,15 +153,27 @@ mod imp {
             if child.is_none() {
                 log::warn!("systemd-inhibit unavailable, sleep prevention disabled");
             }
-            SleepGuard { child }
+            SleepGuard { child: Mutex::new(child) }
+        }
+
+        /// Explicitly kill the systemd-inhibit child and release the logind
+        /// inhibitor lock. Safe to call more than once (a second call is a
+        /// no-op since the child handle was already taken). Must be called
+        /// before `std::process::exit`, which would otherwise skip `Drop`
+        /// and leave systemd-inhibit running as an orphan forever, holding
+        /// the lock and preventing sleep even after LAMBDAn has closed.
+        pub fn stop(&self) {
+            if let Ok(mut guard) = self.child.lock() {
+                if let Some(mut c) = guard.take() {
+                    let _ = c.kill();
+                }
+            }
         }
     }
 
     impl Drop for SleepGuard {
         fn drop(&mut self) {
-            if let Some(mut c) = self.child.take() {
-                let _ = c.kill();
-            }
+            self.stop();
         }
     }
 }
@@ -142,6 +187,8 @@ mod imp {
             log::warn!("sleep prevention not implemented for this platform");
             SleepGuard
         }
+
+        pub fn stop(&self) {}
     }
 }
 
