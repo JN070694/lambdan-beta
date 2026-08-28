@@ -24,8 +24,6 @@
     "fs:scope-appdata-recursive",
     "fs:scope-download-recursive",
     "fs:scope-home-recursive",
-    "shell:default",
-    "process:default",
-    "process:allow-exit"
+    "shell:default"
   ]
 }
