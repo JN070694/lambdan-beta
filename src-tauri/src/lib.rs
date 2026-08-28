@@ -25,13 +25,32 @@ pub fn run() {
                 )) as Box<dyn std::error::Error>)?;
 
             // Held in managed state for the app's whole lifetime so the OS
-            // doesn't sleep/lock the screen out from under an active quiz;
-            // released automatically (dropped) when the app exits.
+            // doesn't sleep/lock the screen out from under an active quiz.
+            // NOTE: this is not released just by the process "exiting" —
+            // see commands::app::quit and the window event handler below,
+            // both of which explicitly call .stop() on it before ever
+            // hard-exiting the process.
             app.manage(sleep_guard::SleepGuard::start());
+
+            // Covers the OS window-close button (the X), which doesn't go
+            // through our `quit` command. Without this, closing the window
+            // this way still leaves the sleep-inhibitor child process
+            // running in the background after LAMBDAn is gone.
+            if let Some(window) = app.get_webview_window("main") {
+                let handle = app.handle().clone();
+                window.on_window_event(move |event| {
+                    if let tauri::WindowEvent::CloseRequested { .. } = event {
+                        if let Some(guard) = handle.try_state::<sleep_guard::SleepGuard>() {
+                            guard.stop();
+                        }
+                    }
+                });
+            }
 
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            commands::app::quit,
             commands::import::import_pack,
             commands::quiz::get_folders,
             commands::quiz::create_folder,
