@@ -54,7 +54,7 @@ export default function TopBar() {
   return (
     <header className="topbar">
       <NavLink to="/library" className="topbar-logo" aria-label="Home">
-        <Logo size={38} />
+        <Logo size={44} />
         <span>LAMBDAn</span>
       </NavLink>
       <CenterTitle />
