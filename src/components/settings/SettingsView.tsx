@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
-import { exit } from '@tauri-apps/plugin-process';
 import { useStore } from '@/store';
 import type { AppSettings, GamepadMapping } from '@/types';
 import { useMenuGamepad, type SettingsSubTab } from '@/utils/useMenuGamepad';
@@ -674,7 +673,7 @@ export default function SettingsView() {
         <ConfirmModal
           title="Quit LAMBDAn"
           message="Are you sure you want to quit LAMBDAn?"
-          onConfirm={() => exit(0)}
+          onConfirm={() => invoke('quit')}
           onCancel={() => setShowQuitAppConfirm(false)}
           confirmLabel="Yes, Quit"
           cancelLabel="No"
