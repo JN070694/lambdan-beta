@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useStore } from '@/store';
 import type { ShuffledQuestion } from '@/types';
 
@@ -147,6 +148,18 @@ function MetaRow({ question, typeLabels, answered, onAnswer }: {
   answered: boolean;
   onAnswer: (ans: string) => void;
 }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(question.questionText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      console.error('Failed to copy question text:', err);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
       <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--grey-500)' }}>
@@ -163,6 +176,16 @@ function MetaRow({ question, typeLabels, answered, onAnswer }: {
 
       {!answered && (
         <div style={{ display: 'flex', gap: 6, marginLeft: 'auto' }}>
+          <button
+            onClick={handleCopy}
+            title="Copy question text"
+            style={{
+              background: 'var(--white)', border: '1.5px solid var(--black)', borderRadius: 5,
+              padding: '3px 10px', fontSize: 11, fontFamily: 'var(--font-mono)',
+              cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: 600,
+            }}>
+            {copied ? '✓ Copied' : '⧉ Copy'}
+          </button>
           <button
             onClick={() => onAnswer('SKIP_CORRECT')}
             title="Skip and mark correct"
